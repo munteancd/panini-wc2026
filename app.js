@@ -92,6 +92,39 @@ function cycleState(data, code) {
 }
 
 let data = loadData();
+let searchQuery = "";
+
+function normText(s) {
+  return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+function sectionMatches(section, query) {
+  if (!query) return true;
+  const q = normText(query);
+  return normText(section.code).startsWith(q) || normText(section.name).includes(q);
+}
+
+function applySearchFilter() {
+  const root = document.getElementById("tab-album");
+  const sections = root.querySelectorAll(".section");
+  let visible = 0;
+  for (let i = 0; i < SECTIONS.length; i++) {
+    const wrapper = sections[i];
+    if (!wrapper) continue;
+    const match = sectionMatches(SECTIONS[i], searchQuery);
+    wrapper.style.display = match ? "" : "none";
+    if (match) visible++;
+  }
+  const counter = document.getElementById("search-counter");
+  if (counter) {
+    if (searchQuery) {
+      counter.textContent = `Afișate: ${visible} din ${SECTIONS.length}`;
+      counter.style.display = "block";
+    } else {
+      counter.style.display = "none";
+    }
+  }
+}
 
 function updateStats() {
   let have = 0, dup = 0;
@@ -116,6 +149,35 @@ function sectionCounts(section) {
 function renderAlbum() {
   const root = document.getElementById("tab-album");
   root.innerHTML = "";
+
+  const searchWrap = document.createElement("div");
+  searchWrap.className = "search-wrap";
+  searchWrap.innerHTML = `
+    <div class="search-input-row">
+      <input type="search" id="search-input" placeholder="🔍 Caută țară..." autocomplete="off" />
+      <button type="button" id="search-clear" aria-label="Resetează" hidden>✕</button>
+    </div>
+    <div id="search-counter" class="search-counter" style="display:none;"></div>
+  `;
+  root.appendChild(searchWrap);
+
+  const input = searchWrap.querySelector("#search-input");
+  const clearBtn = searchWrap.querySelector("#search-clear");
+  input.value = searchQuery;
+  clearBtn.hidden = !searchQuery;
+  input.addEventListener("input", () => {
+    searchQuery = input.value.trim();
+    clearBtn.hidden = !searchQuery;
+    applySearchFilter();
+  });
+  clearBtn.addEventListener("click", () => {
+    searchQuery = "";
+    input.value = "";
+    clearBtn.hidden = true;
+    applySearchFilter();
+    input.focus();
+  });
+
   for (const s of SECTIONS) {
     const sec = document.createElement("div");
     sec.className = "section";
@@ -150,6 +212,7 @@ function renderAlbum() {
     sec.appendChild(grid);
     root.appendChild(sec);
   }
+  applySearchFilter();
 }
 
 function switchTab(name) {

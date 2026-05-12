@@ -1,4 +1,4 @@
-const CACHE_VERSION = "panini-wc26-v1";
+const CACHE_VERSION = "panini-wc26-v2";
 const ASSETS = [
   "./",
   "./index.html",
