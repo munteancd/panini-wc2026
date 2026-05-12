@@ -259,8 +259,102 @@ function renderDupes() {
     }
   });
 }
+function isValidBackup(obj) {
+  if (!obj || typeof obj !== "object") return false;
+  if (obj.version !== 1) return false;
+  if (!obj.stickers || typeof obj.stickers !== "object") return false;
+  for (const [k, v] of Object.entries(obj.stickers)) {
+    if (!/^[A-Z]{2,3}\d+$/.test(k)) return false;
+    if (v !== "have" && v !== "dup") return false;
+  }
+  return true;
+}
+
 function renderSettings() {
-  document.getElementById("tab-settings").innerHTML = "<p>TODO</p>";
+  const root = document.getElementById("tab-settings");
+  let have = 0, dup = 0;
+  for (const v of Object.values(data.stickers)) {
+    if (v === "have") have++;
+    else if (v === "dup") dup++;
+  }
+  const total = allStickerCodes().length;
+  const missing = total - have - dup;
+
+  root.innerHTML = `
+    <div class="settings-row">
+      <strong>Statistici</strong>
+      <p style="color:var(--muted); margin:6px 0;">
+        Total: ${total}<br>
+        Am: ${have}<br>
+        Dubluri: ${dup}<br>
+        Lipsă: ${missing}<br>
+        Ultim update: ${data.updated || "—"}
+      </p>
+    </div>
+    <div class="settings-row">
+      <button class="btn" id="btn-backup">Backup (descarcă .json)</button>
+      <button class="btn ghost" id="btn-restore">Restore (încarcă .json)</button>
+      <input type="file" id="file-restore" accept="application/json" hidden />
+    </div>
+    <div class="settings-row">
+      <button class="btn danger" id="btn-reset">Reset (șterge tot)</button>
+    </div>
+  `;
+
+  document.getElementById("btn-backup").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `stickere-${date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("Backup descărcat");
+  });
+
+  const fileInput = document.getElementById("file-restore");
+  document.getElementById("btn-restore").addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    try {
+      const text = await f.text();
+      const obj = JSON.parse(text);
+      if (!isValidBackup(obj)) {
+        alert("Fișier invalid.");
+        fileInput.value = "";
+        return;
+      }
+      if (!confirm("Suprascrii datele curente cu cele din fișier?")) {
+        fileInput.value = "";
+        return;
+      }
+      data = obj;
+      saveData(data);
+      fileInput.value = "";
+      renderAlbum();
+      updateStats();
+      renderSettings();
+      showToast("Restaurat");
+    } catch {
+      alert("Eroare la citirea fișierului.");
+      fileInput.value = "";
+    }
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    if (!confirm("Ești sigur că vrei să ștergi TOATE datele?")) return;
+    if (!confirm("Confirmă încă o dată: se șterge tot.")) return;
+    data = { version: 1, updated: null, stickers: {} };
+    saveData(data);
+    renderAlbum();
+    updateStats();
+    renderSettings();
+    showToast("Resetat");
+  });
 }
 
 renderAlbum();
