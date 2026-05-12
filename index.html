@@ -34,6 +34,22 @@
 
   <div id="toast" class="toast"></div>
 
+  <div id="preview-modal" class="preview-modal" hidden>
+    <div class="preview-backdrop"></div>
+    <div class="preview-card">
+      <button class="preview-close" type="button" aria-label="Închide">✕</button>
+      <div class="preview-image-wrap">
+        <img id="preview-img" alt="" />
+        <div id="preview-placeholder" class="preview-placeholder" hidden></div>
+      </div>
+      <div class="preview-meta">
+        <div id="preview-code" class="preview-code"></div>
+        <div id="preview-name" class="preview-name"></div>
+        <div id="preview-state" class="preview-state"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="./app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {

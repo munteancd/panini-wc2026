@@ -53,6 +53,12 @@ const SECTIONS = [
 
 const STORAGE_KEY = "panini-wc26-data";
 
+let STICKER_NAMES = {};
+fetch("./data/sticker-names.json")
+  .then((r) => (r.ok ? r.json() : {}))
+  .then((d) => { STICKER_NAMES = d; })
+  .catch(() => {});
+
 function allStickerCodes() {
   const out = [];
   for (const s of SECTIONS) {
@@ -93,6 +99,7 @@ function cycleState(data, code) {
 
 let data = loadData();
 let searchQuery = "";
+let longPressTriggered = false;
 
 function normText(s) {
   return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
@@ -135,6 +142,31 @@ function updateStats() {
   const total = allStickerCodes().length;
   document.getElementById("stats").textContent =
     `${have + dup} / ${total} • Dubluri: ${dup}`;
+}
+
+function makeProgressBar(section) {
+  const bar = document.createElement("div");
+  bar.className = "progress-bar";
+  bar.dataset.code = section.code;
+  updateProgressBar(bar, section);
+  return bar;
+}
+
+function updateProgressBar(bar, section) {
+  const total = section.end - section.start + 1;
+  let have = 0, dup = 0;
+  for (let i = section.start; i <= section.end; i++) {
+    const v = data.stickers[section.code + i];
+    if (v === "have") have++;
+    else if (v === "dup") dup++;
+  }
+  const havePct = (have / total) * 100;
+  const dupPct = (dup / total) * 100;
+  const end = havePct + dupPct;
+  bar.style.background = `linear-gradient(to right,
+    var(--have) 0 ${havePct}%,
+    var(--dup) ${havePct}% ${end}%,
+    var(--missing) ${end}% 100%)`;
 }
 
 function sectionCounts(section) {
@@ -192,6 +224,7 @@ function renderAlbum() {
     `;
     header.addEventListener("click", () => sec.classList.toggle("collapsed"));
     sec.appendChild(header);
+    sec.appendChild(makeProgressBar(s));
 
     const grid = document.createElement("div");
     grid.className = "grid";
@@ -200,11 +233,15 @@ function renderAlbum() {
       const btn = document.createElement("button");
       btn.className = "sticker " + getState(data, code);
       btn.textContent = code;
+      attachLongPress(btn, code);
       btn.addEventListener("click", () => {
+        if (longPressTriggered) { longPressTriggered = false; return; }
         const next = cycleState(data, code);
         btn.className = "sticker " + next;
         const c = sectionCounts(s);
         header.querySelector(".count").textContent = `${c.owned}/${c.total}`;
+        const pbar = sec.querySelector(".progress-bar");
+        if (pbar) updateProgressBar(pbar, s);
         updateStats();
       });
       grid.appendChild(btn);
@@ -213,6 +250,65 @@ function renderAlbum() {
     root.appendChild(sec);
   }
   applySearchFilter();
+}
+
+function openPreview(code) {
+  const modal = document.getElementById("preview-modal");
+  const img = document.getElementById("preview-img");
+  const ph = document.getElementById("preview-placeholder");
+  document.getElementById("preview-code").textContent = code;
+  document.getElementById("preview-name").textContent = STICKER_NAMES[code] || "";
+  const state = getState(data, code);
+  const stateEl = document.getElementById("preview-state");
+  stateEl.textContent = state === "have" ? "Am" : state === "dup" ? "Dublură" : "Lipsă";
+  stateEl.className = "preview-state " + state;
+
+  img.hidden = false;
+  ph.hidden = true;
+  img.onerror = () => {
+    img.hidden = true;
+    ph.hidden = false;
+    ph.textContent = code;
+  };
+  img.src = `./images/${code}.jpg`;
+  modal.hidden = false;
+}
+
+function closePreview() {
+  document.getElementById("preview-modal").hidden = true;
+}
+
+document.getElementById("preview-modal").addEventListener("click", (e) => {
+  if (e.target.classList.contains("preview-backdrop") || e.target.classList.contains("preview-close")) {
+    closePreview();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePreview();
+});
+
+function attachLongPress(el, code) {
+  let timer = null;
+  const start = () => {
+    timer = setTimeout(() => {
+      longPressTriggered = true;
+      openPreview(code);
+    }, 500);
+  };
+  const cancel = () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+  };
+  el.addEventListener("touchstart", start, { passive: true });
+  el.addEventListener("touchend", cancel);
+  el.addEventListener("touchmove", cancel);
+  el.addEventListener("mousedown", start);
+  el.addEventListener("mouseup", cancel);
+  el.addEventListener("mouseleave", cancel);
+  el.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    longPressTriggered = true;
+    openPreview(code);
+  });
 }
 
 function switchTab(name) {
@@ -460,12 +556,14 @@ function renderCollection() {
       <span class="count">${owned.length}/${s.end - s.start + 1}</span>
     `;
     sec.appendChild(header);
+    sec.appendChild(makeProgressBar(s));
 
     const grid = document.createElement("div");
     grid.className = "collection-grid";
     for (const { code, state } of owned) {
       const cell = document.createElement("div");
       cell.className = "collection-cell " + state;
+      attachLongPress(cell, code);
       const img = document.createElement("img");
       img.src = `./images/${code}.jpg`;
       img.alt = code;
@@ -478,7 +576,8 @@ function renderCollection() {
       };
       const label = document.createElement("div");
       label.className = "collection-label";
-      label.textContent = code;
+      const playerName = STICKER_NAMES[code];
+      label.textContent = playerName ? `${code} · ${playerName}` : code;
       cell.appendChild(img);
       cell.appendChild(label);
       grid.appendChild(cell);
