@@ -173,8 +173,91 @@ function showToast(msg) {
 }
 
 // stubs filled in later tasks
+function collectDupes() {
+  const bySection = [];
+  let total = 0;
+  for (const s of SECTIONS) {
+    const codes = [];
+    for (let i = s.start; i <= s.end; i++) {
+      const c = s.code + i;
+      if (data.stickers[c] === "dup") codes.push(c);
+    }
+    if (codes.length) {
+      bySection.push({ section: s, codes });
+      total += codes.length;
+    }
+  }
+  return { bySection, total };
+}
+
+function dupesAsText() {
+  const { bySection, total } = collectDupes();
+  if (total === 0) return "Nicio dublură.";
+  const lines = [`Dubluri (${total}):`];
+  for (const { section, codes } of bySection) {
+    lines.push(`${section.name}: ${codes.join(", ")}`);
+  }
+  return lines.join("\n");
+}
+
 function renderDupes() {
-  document.getElementById("tab-dupes").innerHTML = "<p>TODO</p>";
+  const root = document.getElementById("tab-dupes");
+  const { bySection, total } = collectDupes();
+  root.innerHTML = "";
+
+  const actions = document.createElement("div");
+  actions.innerHTML = `
+    <button class="btn" id="btn-copy">Copiază lista</button>
+    <button class="btn ghost" id="btn-share">Distribuie</button>
+    <p style="color:var(--muted); margin:8px 0;">Total dubluri: <strong>${total}</strong></p>
+  `;
+  root.appendChild(actions);
+
+  if (total === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "Nicio dublură deocamdată.";
+    empty.style.color = "var(--muted)";
+    root.appendChild(empty);
+  } else {
+    const list = document.createElement("div");
+    list.className = "dupes-section";
+    for (const { section, codes } of bySection) {
+      const h = document.createElement("h3");
+      h.textContent = `${section.flag} ${section.name} (${codes.length})`;
+      list.appendChild(h);
+      const p = document.createElement("div");
+      p.className = "dupes-list";
+      p.textContent = codes.join(", ");
+      list.appendChild(p);
+    }
+    root.appendChild(list);
+  }
+
+  document.getElementById("btn-copy").addEventListener("click", async () => {
+    const text = dupesAsText();
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Copiat!");
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      showToast("Copiat!");
+    }
+  });
+
+  document.getElementById("btn-share").addEventListener("click", async () => {
+    const text = dupesAsText();
+    if (navigator.share) {
+      try { await navigator.share({ text }); } catch {}
+    } else {
+      await navigator.clipboard.writeText(text);
+      showToast("Web Share indisponibil — copiat în clipboard");
+    }
+  });
 }
 function renderSettings() {
   document.getElementById("tab-settings").innerHTML = "<p>TODO</p>";
