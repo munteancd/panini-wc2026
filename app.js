@@ -222,6 +222,7 @@ function switchTab(name) {
   document.querySelector(`.nav-btn[data-tab="${name}"]`).classList.add("active");
   if (name === "dupes") renderDupes();
   if (name === "missing") renderMissing();
+  if (name === "collection") renderCollection();
   if (name === "settings") renderSettings();
 }
 
@@ -415,6 +416,92 @@ function renderDupes() {
     }
   });
 }
+const COUNTRY_CODES = new Set([
+  "MEX","RSA","KOR","CZE","CAN","BIH","QAT","SUI","BRA","MAR","HAI","SCO",
+  "USA","PAR","AUS","TUR","GER","CUW","CIV","ECU","NED","JPN","SWE","TUN",
+  "BEL","EGY","IRN","NZL","ESP","CPV","KSA","URU","FRA","SEN","IRQ","NOR",
+  "ARG","ALG","AUT","JOR","POR","COD","UZB","COL","ENG","CRO","GHA","PAN",
+]);
+
+function renderCollection() {
+  const root = document.getElementById("tab-collection");
+  root.innerHTML = "";
+
+  const intro = document.createElement("p");
+  intro.style.color = "var(--muted)";
+  intro.style.fontSize = "0.85rem";
+  intro.style.margin = "4px 0 12px";
+  intro.textContent = "Imaginile sunt agregate de pe laststicker.com (acoperire parțială, crește săptămânal). FWC și Coca-Cola nu sunt disponibile.";
+  root.appendChild(intro);
+
+  let totalOwned = 0;
+  let renderedAny = false;
+
+  for (const s of SECTIONS) {
+    if (!COUNTRY_CODES.has(s.code)) continue;
+    const owned = [];
+    for (let i = s.start; i <= s.end; i++) {
+      const code = s.code + i;
+      const state = getState(data, code);
+      if (state === "have" || state === "dup") owned.push({ code, state });
+    }
+    if (!owned.length) continue;
+    totalOwned += owned.length;
+    renderedAny = true;
+
+    const sec = document.createElement("div");
+    sec.className = "section";
+
+    const header = document.createElement("div");
+    header.className = "section-header";
+    header.innerHTML = `
+      <span class="flag">${s.flag}</span>
+      <span class="name">${s.name}</span>
+      <span class="count">${owned.length}/${s.end - s.start + 1}</span>
+    `;
+    sec.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "collection-grid";
+    for (const { code, state } of owned) {
+      const cell = document.createElement("div");
+      cell.className = "collection-cell " + state;
+      const img = document.createElement("img");
+      img.src = `./images/${code}.jpg`;
+      img.alt = code;
+      img.loading = "lazy";
+      img.onerror = () => {
+        const ph = document.createElement("div");
+        ph.className = "collection-placeholder";
+        ph.textContent = code;
+        cell.replaceChild(ph, img);
+      };
+      const label = document.createElement("div");
+      label.className = "collection-label";
+      label.textContent = code;
+      cell.appendChild(img);
+      cell.appendChild(label);
+      grid.appendChild(cell);
+    }
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  }
+
+  if (!renderedAny) {
+    const empty = document.createElement("p");
+    empty.style.color = "var(--muted)";
+    empty.textContent = "Nu ai bifat încă niciun sticker de țară.";
+    root.appendChild(empty);
+  } else {
+    const tally = document.createElement("p");
+    tally.style.color = "var(--muted)";
+    tally.style.fontSize = "0.85rem";
+    tally.style.marginTop = "12px";
+    tally.textContent = `Total țări bifate: ${totalOwned} stickere.`;
+    root.appendChild(tally);
+  }
+}
+
 function isValidBackup(obj) {
   if (!obj || typeof obj !== "object") return false;
   if (obj.version !== 1) return false;
