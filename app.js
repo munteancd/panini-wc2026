@@ -158,6 +158,7 @@ function switchTab(name) {
   document.getElementById("tab-" + name).classList.add("active");
   document.querySelector(`.nav-btn[data-tab="${name}"]`).classList.add("active");
   if (name === "dupes") renderDupes();
+  if (name === "missing") renderMissing();
   if (name === "settings") renderSettings();
 }
 
@@ -198,6 +199,98 @@ function dupesAsText() {
     lines.push(`${section.name}: ${codes.join(", ")}`);
   }
   return lines.join("\n");
+}
+
+function collectMissing() {
+  const bySection = [];
+  let total = 0;
+  for (const s of SECTIONS) {
+    const codes = [];
+    for (let i = s.start; i <= s.end; i++) {
+      const c = s.code + i;
+      if (!(c in data.stickers)) codes.push(c);
+    }
+    if (codes.length) {
+      bySection.push({ section: s, codes });
+      total += codes.length;
+    }
+  }
+  return { bySection, total };
+}
+
+function missingAsText() {
+  const { bySection, total } = collectMissing();
+  if (total === 0) return "Nicio lipsă — albumul e complet!";
+  const lines = [`Lipsă (${total}):`];
+  for (const { section, codes } of bySection) {
+    lines.push(`${section.name}: ${codes.join(", ")}`);
+  }
+  return lines.join("\n");
+}
+
+function renderMissing() {
+  const root = document.getElementById("tab-missing");
+  const { bySection, total } = collectMissing();
+  root.innerHTML = "";
+
+  const actions = document.createElement("div");
+  actions.innerHTML = `
+    <button class="btn" id="btn-copy-missing">Copiază lista</button>
+    <button class="btn ghost" id="btn-share-missing">Distribuie</button>
+    <p style="color:var(--muted); margin:8px 0;">Total lipsă: <strong>${total}</strong></p>
+  `;
+  root.appendChild(actions);
+
+  if (total === 0) {
+    const done = document.createElement("p");
+    done.textContent = "Nicio lipsă — albumul e complet! 🎉";
+    done.style.color = "var(--have)";
+    done.style.fontWeight = "600";
+    root.appendChild(done);
+  } else {
+    const list = document.createElement("div");
+    list.className = "dupes-section";
+    for (const { section, codes } of bySection) {
+      const h = document.createElement("h3");
+      h.textContent = `${section.flag} ${section.name} (${codes.length})`;
+      list.appendChild(h);
+      const p = document.createElement("div");
+      p.className = "dupes-list";
+      p.textContent = codes.join(", ");
+      list.appendChild(p);
+    }
+    root.appendChild(list);
+  }
+
+  document.getElementById("btn-copy-missing").addEventListener("click", async () => {
+    const text = missingAsText();
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Copiat!");
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      showToast("Copiat!");
+    }
+  });
+
+  document.getElementById("btn-share-missing").addEventListener("click", async () => {
+    const text = missingAsText();
+    if (navigator.share) {
+      try { await navigator.share({ text }); } catch {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Web Share indisponibil — copiat în clipboard");
+      } catch {
+        showToast("Eroare la copiere");
+      }
+    }
+  });
 }
 
 function renderDupes() {
