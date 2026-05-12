@@ -32,7 +32,11 @@
 
   <script src="./app.js"></script>
   <script>
-    // sw registration happens in Task 7
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(console.error);
+      });
+    }
   </script>
 </body>
 </html>
