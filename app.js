@@ -90,3 +90,95 @@ function cycleState(data, code) {
   saveData(data);
   return next;
 }
+
+let data = loadData();
+
+function updateStats() {
+  let have = 0, dup = 0;
+  for (const v of Object.values(data.stickers)) {
+    if (v === "have") have++;
+    else if (v === "dup") dup++;
+  }
+  const total = allStickerCodes().length;
+  document.getElementById("stats").textContent =
+    `${have + dup} / ${total} • Dubluri: ${dup}`;
+}
+
+function sectionCounts(section) {
+  let owned = 0, total = section.end - section.start + 1;
+  for (let i = section.start; i <= section.end; i++) {
+    const v = data.stickers[section.code + i];
+    if (v === "have" || v === "dup") owned++;
+  }
+  return { owned, total };
+}
+
+function renderAlbum() {
+  const root = document.getElementById("tab-album");
+  root.innerHTML = "";
+  for (const s of SECTIONS) {
+    const sec = document.createElement("div");
+    sec.className = "section";
+    const { owned, total } = sectionCounts(s);
+
+    const header = document.createElement("div");
+    header.className = "section-header";
+    header.innerHTML = `
+      <span class="flag">${s.flag}</span>
+      <span class="name">${s.name}</span>
+      <span class="count">${owned}/${total}</span>
+    `;
+    header.addEventListener("click", () => sec.classList.toggle("collapsed"));
+    sec.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    for (let i = s.start; i <= s.end; i++) {
+      const code = s.code + i;
+      const btn = document.createElement("button");
+      btn.className = "sticker " + getState(data, code);
+      btn.textContent = code;
+      btn.addEventListener("click", () => {
+        const next = cycleState(data, code);
+        btn.className = "sticker " + next;
+        const c = sectionCounts(s);
+        header.querySelector(".count").textContent = `${c.owned}/${c.total}`;
+        updateStats();
+      });
+      grid.appendChild(btn);
+    }
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  document.querySelector(`.nav-btn[data-tab="${name}"]`).classList.add("active");
+  if (name === "dupes") renderDupes();
+  if (name === "settings") renderSettings();
+}
+
+document.querySelectorAll(".nav-btn").forEach(b => {
+  b.addEventListener("click", () => switchTab(b.dataset.tab));
+});
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1500);
+}
+
+// stubs filled in later tasks
+function renderDupes() {
+  document.getElementById("tab-dupes").innerHTML = "<p>TODO</p>";
+}
+function renderSettings() {
+  document.getElementById("tab-settings").innerHTML = "<p>TODO</p>";
+}
+
+renderAlbum();
+updateStats();
