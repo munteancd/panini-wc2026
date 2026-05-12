@@ -1,0 +1,38 @@
+name: Refresh sticker images
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install cloudscraper
+
+      - name: Scrape new images
+        run: python scripts/scrape_images.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "panini-bot"
+          git config user.email "actions@github.com"
+          git add images/
+          if git diff --cached --quiet; then
+            echo "No new images."
+            exit 0
+          fi
+          NEW=$(git diff --cached --name-only | wc -l)
+          git commit -m "Refresh sticker images (+$NEW noi)"
+          git push
