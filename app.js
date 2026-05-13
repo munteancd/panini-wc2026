@@ -82,6 +82,7 @@ function loadData() {
 function saveData(data) {
   data.updated = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  schedulePush();
 }
 
 function getState(data, code) {
@@ -622,6 +623,7 @@ function renderSettings() {
   const total = allStickerCodes().length;
   const missing = total - have - dup;
 
+  const cfg = getSyncConfig();
   root.innerHTML = `
     <div class="settings-row">
       <strong>Statistici</strong>
@@ -634,6 +636,24 @@ function renderSettings() {
       </p>
     </div>
     <div class="settings-row">
+      <strong>Sincronizare (GitHub Gist)</strong>
+      <p style="color:var(--muted); margin:6px 0; font-size:0.85rem;">
+        Token Personal Access Token cu scope <code>gist</code>. Generează de la
+        <a href="https://github.com/settings/tokens/new?scopes=gist&description=Panini%20WC26" target="_blank" rel="noopener" style="color:#9cc4ff;">github.com/settings/tokens</a>.
+        Token-ul rămâne doar local pe acest dispozitiv.
+      </p>
+      <label style="display:block; margin:6px 0 2px; font-size:0.85rem; color:var(--muted);">Token</label>
+      <input type="password" id="sync-token" value="${cfg.token}" placeholder="ghp_..." style="width:100%; background:var(--bg); color:var(--text); border:1px solid var(--muted); border-radius:6px; padding:8px; font-family:inherit;" />
+      <label style="display:block; margin:8px 0 2px; font-size:0.85rem; color:var(--muted);">Gist ID (lasă gol pentru creare automată)</label>
+      <input type="text" id="sync-gist-id" value="${cfg.gistId}" placeholder="auto" style="width:100%; background:var(--bg); color:var(--text); border:1px solid var(--muted); border-radius:6px; padding:8px; font-family:inherit;" />
+      <button class="btn" id="btn-sync-save" style="margin-top:8px;">Salvează setări sync</button>
+      <div style="display:flex; gap:6px; margin-top:6px;">
+        <button class="btn ghost" id="btn-sync-push" style="flex:1; margin:0;">⬆ Push</button>
+        <button class="btn ghost" id="btn-sync-pull" style="flex:1; margin:0;">⬇ Pull</button>
+      </div>
+      <p id="sync-status" style="color:var(--muted); margin:8px 0 0; font-size:0.85rem;">${renderSyncStatus()}</p>
+    </div>
+    <div class="settings-row">
       <button class="btn" id="btn-backup">Backup (descarcă .json)</button>
       <button class="btn ghost" id="btn-restore">Restore (încarcă .json)</button>
       <input type="file" id="file-restore" accept="application/json" hidden />
@@ -642,6 +662,34 @@ function renderSettings() {
       <button class="btn danger" id="btn-reset">Reset (șterge tot)</button>
     </div>
   `;
+
+  document.getElementById("btn-sync-save").addEventListener("click", () => {
+    const t = document.getElementById("sync-token").value.trim();
+    const g = document.getElementById("sync-gist-id").value.trim();
+    if (t) localStorage.setItem(SYNC_TOKEN_KEY, t);
+    else localStorage.removeItem(SYNC_TOKEN_KEY);
+    if (g) localStorage.setItem(SYNC_GIST_KEY, g);
+    else localStorage.removeItem(SYNC_GIST_KEY);
+    setSyncStatus("idle");
+    showToast("Setări salvate");
+    renderSettings();
+  });
+  document.getElementById("btn-sync-push").addEventListener("click", async () => {
+    await pushToGist();
+    renderSettings();
+  });
+  document.getElementById("btn-sync-pull").addEventListener("click", async () => {
+    const remote = await pullFromGist();
+    if (remote) {
+      if (!confirm("Suprascrii datele locale cu cele din Gist?")) return;
+      data = remote;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      renderAlbum();
+      updateStats();
+      renderSettings();
+      showToast("Date coborâte din Gist");
+    }
+  });
 
   document.getElementById("btn-backup").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -701,3 +749,136 @@ function renderSettings() {
 
 renderAlbum();
 updateStats();
+
+// ===== Sync (GitHub Gist) =====
+const SYNC_TOKEN_KEY = "panini-wc26-sync-token";
+const SYNC_GIST_KEY = "panini-wc26-sync-gist-id";
+const GIST_FILENAME = "panini-wc26.json";
+
+let syncStatus = "idle";
+let syncMessage = "";
+let pushTimer = null;
+
+function getSyncConfig() {
+  return {
+    token: localStorage.getItem(SYNC_TOKEN_KEY) || "",
+    gistId: localStorage.getItem(SYNC_GIST_KEY) || "",
+  };
+}
+
+function renderSyncStatus() {
+  const { token, gistId } = getSyncConfig();
+  if (!token) return "Sync: dezactivat (fără token)";
+  if (syncStatus === "syncing") return "Sync: se sincronizează…";
+  if (syncStatus === "error") return `Sync: eroare — ${syncMessage}`;
+  if (syncStatus === "ok") return `Sync: ${syncMessage}`;
+  return gistId ? "Sync: pregătit" : "Sync: niciun Gist (apasă „Push”)";
+}
+
+function setSyncStatus(s, m = "") {
+  syncStatus = s;
+  syncMessage = m;
+  const el = document.getElementById("sync-status");
+  if (el) el.textContent = renderSyncStatus();
+}
+
+async function pushToGist() {
+  const { token, gistId } = getSyncConfig();
+  if (!token) return false;
+  setSyncStatus("syncing");
+  try {
+    const body = {
+      description: "Panini WC26 sticker tracker data",
+      files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } },
+    };
+    let url, method;
+    if (gistId) {
+      url = `https://api.github.com/gists/${gistId}`;
+      method = "PATCH";
+    } else {
+      url = "https://api.github.com/gists";
+      method = "POST";
+      body.public = false;
+    }
+    const r = await fetch(url, {
+      method,
+      headers: {
+        "Authorization": `token ${token}`,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error(`HTTP ${r.status}: ${txt.slice(0, 80)}`);
+    }
+    const j = await r.json();
+    if (!gistId && j.id) {
+      localStorage.setItem(SYNC_GIST_KEY, j.id);
+    }
+    setSyncStatus("ok", "urcat " + new Date().toLocaleTimeString());
+    return true;
+  } catch (e) {
+    setSyncStatus("error", e.message);
+    return false;
+  }
+}
+
+async function pullFromGist({ silent = false } = {}) {
+  const { token, gistId } = getSyncConfig();
+  if (!token || !gistId) return null;
+  if (!silent) setSyncStatus("syncing");
+  try {
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: {
+        "Authorization": `token ${token}`,
+        "Accept": "application/vnd.github+json",
+      },
+      cache: "no-cache",
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j = await r.json();
+    const file = j.files && j.files[GIST_FILENAME];
+    if (!file) throw new Error("Gist nu conține fișierul");
+    const remote = JSON.parse(file.content);
+    if (!isValidBackup(remote)) throw new Error("Date invalide în Gist");
+    setSyncStatus("ok", "coborât " + new Date().toLocaleTimeString());
+    return remote;
+  } catch (e) {
+    setSyncStatus("error", e.message);
+    return null;
+  }
+}
+
+function schedulePush() {
+  const { token } = getSyncConfig();
+  if (!token) return;
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { pushTimer = null; pushToGist(); }, 2000);
+}
+
+async function initialSync() {
+  const { token, gistId } = getSyncConfig();
+  if (!token || !gistId) return;
+  const remote = await pullFromGist({ silent: true });
+  if (!remote) return;
+  const localTime = data.updated ? new Date(data.updated).getTime() : 0;
+  const remoteTime = remote.updated ? new Date(remote.updated).getTime() : 0;
+  if (remoteTime > localTime) {
+    data = remote;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    renderAlbum();
+    updateStats();
+    const settingsTab = document.getElementById("tab-settings");
+    if (settingsTab.classList.contains("active")) renderSettings();
+    showToast("Sincronizat din cloud");
+  } else if (localTime > remoteTime) {
+    schedulePush();
+  }
+}
+
+initialSync();
+window.addEventListener("focus", () => {
+  if (!pushTimer) initialSync();
+});
