@@ -89,9 +89,31 @@ function getState(data, code) {
   return data.stickers[code] || "missing";
 }
 
+// Stările unui sticker, în ordinea de ciclare (după "missing"):
+//   have  = am, 0 dubluri (verde)
+//   dup   = 1 dublură (orange)
+//   dup2  = 2 dubluri (roșu deschis)
+//   dup3  = 3 dubluri (roșu)
+//   dup4  = 4 dubluri (roșu închis, maxim: 1 dublură + 3 extradubluri)
+const CYCLE = ["have", "dup", "dup2", "dup3", "dup4"];
+const DUP_STATES = ["dup", "dup2", "dup3", "dup4"];
+const SPARES = { have: 0, dup: 1, dup2: 2, dup3: 3, dup4: 4 };
+
+function isOwned(state) { return state === "have" || DUP_STATES.includes(state); }
+function isDup(state) { return DUP_STATES.includes(state); }
+function spareCount(state) { return SPARES[state] || 0; }
+function stateLabel(state) {
+  if (state === "have") return "Am";
+  if (state === "dup") return "Dublură";
+  if (DUP_STATES.includes(state)) return `${spareCount(state)} dubluri`;
+  return "Lipsă";
+}
+
 function cycleState(data, code) {
   const cur = getState(data, code);
-  const next = cur === "missing" ? "have" : cur === "have" ? "dup" : "missing";
+  const order = ["missing", ...CYCLE];
+  const idx = order.indexOf(cur);
+  const next = order[(idx + 1) % order.length];
   if (next === "missing") delete data.stickers[code];
   else data.stickers[code] = next;
   saveData(data);
@@ -135,14 +157,14 @@ function applySearchFilter() {
 }
 
 function updateStats() {
-  let have = 0, dup = 0;
+  let owned = 0, spares = 0;
   for (const v of Object.values(data.stickers)) {
-    if (v === "have") have++;
-    else if (v === "dup") dup++;
+    if (isOwned(v)) owned++;
+    spares += spareCount(v);
   }
   const total = allStickerCodes().length;
   document.getElementById("stats").textContent =
-    `${have + dup} / ${total} • Dubluri: ${dup}`;
+    `${owned} / ${total} • Dubluri: ${spares}`;
 }
 
 function makeProgressBar(section) {
@@ -159,7 +181,7 @@ function updateProgressBar(bar, section) {
   for (let i = section.start; i <= section.end; i++) {
     const v = data.stickers[section.code + i];
     if (v === "have") have++;
-    else if (v === "dup") dup++;
+    else if (isDup(v)) dup++;
   }
   const havePct = (have / total) * 100;
   const dupPct = (dup / total) * 100;
@@ -174,9 +196,22 @@ function sectionCounts(section) {
   let owned = 0, total = section.end - section.start + 1;
   for (let i = section.start; i <= section.end; i++) {
     const v = data.stickers[section.code + i];
-    if (v === "have" || v === "dup") owned++;
+    if (isOwned(v)) owned++;
   }
   return { owned, total };
+}
+
+function paintSticker(btn, code) {
+  const st = getState(data, code);
+  btn.className = "sticker " + st;
+  btn.textContent = code;
+  const n = spareCount(st);
+  if (n >= 2) {
+    const badge = document.createElement("span");
+    badge.className = "dup-badge";
+    badge.textContent = "×" + n;
+    btn.appendChild(badge);
+  }
 }
 
 function renderAlbum() {
@@ -232,13 +267,12 @@ function renderAlbum() {
     for (let i = s.start; i <= s.end; i++) {
       const code = s.code + i;
       const btn = document.createElement("button");
-      btn.className = "sticker " + getState(data, code);
-      btn.textContent = code;
+      paintSticker(btn, code);
       attachLongPress(btn, code);
       btn.addEventListener("click", () => {
         if (longPressTriggered) { longPressTriggered = false; return; }
-        const next = cycleState(data, code);
-        btn.className = "sticker " + next;
+        cycleState(data, code);
+        paintSticker(btn, code);
         const c = sectionCounts(s);
         header.querySelector(".count").textContent = `${c.owned}/${c.total}`;
         const pbar = sec.querySelector(".progress-bar");
@@ -261,7 +295,7 @@ function openPreview(code) {
   document.getElementById("preview-name").textContent = STICKER_NAMES[code] || "";
   const state = getState(data, code);
   const stateEl = document.getElementById("preview-state");
-  stateEl.textContent = state === "have" ? "Am" : state === "dup" ? "Dublură" : "Lipsă";
+  stateEl.textContent = stateLabel(state);
   stateEl.className = "preview-state " + state;
 
   img.hidden = false;
@@ -337,27 +371,33 @@ function showToast(msg) {
 // stubs filled in later tasks
 function collectDupes() {
   const bySection = [];
-  let total = 0;
+  let total = 0; // total exemplare în plus (toate dublurile)
   for (const s of SECTIONS) {
-    const codes = [];
+    const items = [];
     for (let i = s.start; i <= s.end; i++) {
       const c = s.code + i;
-      if (data.stickers[c] === "dup") codes.push(c);
+      const st = data.stickers[c];
+      if (isDup(st)) {
+        const n = spareCount(st);
+        items.push({ code: c, count: n });
+        total += n;
+      }
     }
-    if (codes.length) {
-      bySection.push({ section: s, codes });
-      total += codes.length;
-    }
+    if (items.length) bySection.push({ section: s, items });
   }
   return { bySection, total };
+}
+
+function dupItemLabel(it) {
+  return it.count > 1 ? `${it.code} ×${it.count}` : it.code;
 }
 
 function dupesAsText() {
   const { bySection, total } = collectDupes();
   if (total === 0) return "Nicio dublură.";
   const lines = [`Dubluri (${total}):`];
-  for (const { section, codes } of bySection) {
-    lines.push(`${section.name}: ${codes.join(", ")}`);
+  for (const { section, items } of bySection) {
+    lines.push(`${section.name}: ${items.map(dupItemLabel).join(", ")}`);
   }
   return lines.join("\n");
 }
@@ -475,13 +515,13 @@ function renderDupes() {
   } else {
     const list = document.createElement("div");
     list.className = "dupes-section";
-    for (const { section, codes } of bySection) {
+    for (const { section, items } of bySection) {
       const h = document.createElement("h3");
-      h.textContent = `${section.flag} ${section.name} (${codes.length})`;
+      h.textContent = `${section.flag} ${section.name} (${items.length})`;
       list.appendChild(h);
       const p = document.createElement("div");
       p.className = "dupes-list";
-      p.textContent = codes.join(", ");
+      p.textContent = items.map(dupItemLabel).join(", ");
       list.appendChild(p);
     }
     root.appendChild(list);
@@ -540,7 +580,7 @@ function renderCollection() {
     for (let i = s.start; i <= s.end; i++) {
       const code = s.code + i;
       const state = getState(data, code);
-      if (state === "have" || state === "dup") owned.push({ code, state });
+      if (isOwned(state)) owned.push({ code, state });
     }
     if (!owned.length) continue;
     totalOwned += owned.length;
@@ -608,20 +648,20 @@ function isValidBackup(obj) {
   if (!obj.stickers || typeof obj.stickers !== "object") return false;
   for (const [k, v] of Object.entries(obj.stickers)) {
     if (!/^[A-Z]{2,3}\d+$/.test(k)) return false;
-    if (v !== "have" && v !== "dup") return false;
+    if (v !== "have" && !DUP_STATES.includes(v)) return false;
   }
   return true;
 }
 
 function renderSettings() {
   const root = document.getElementById("tab-settings");
-  let have = 0, dup = 0;
+  let owned = 0, spares = 0;
   for (const v of Object.values(data.stickers)) {
-    if (v === "have") have++;
-    else if (v === "dup") dup++;
+    if (isOwned(v)) owned++;
+    spares += spareCount(v);
   }
   const total = allStickerCodes().length;
-  const missing = total - have - dup;
+  const missing = total - owned;
 
   const cfg = getSyncConfig();
   root.innerHTML = `
@@ -629,8 +669,8 @@ function renderSettings() {
       <strong>Statistici</strong>
       <p style="color:var(--muted); margin:6px 0;">
         Total: ${total}<br>
-        Am: ${have}<br>
-        Dubluri: ${dup}<br>
+        Deținute: ${owned}<br>
+        Dubluri (exemplare în plus): ${spares}<br>
         Lipsă: ${missing}<br>
         Ultim update: ${data.updated || "—"}
       </p>

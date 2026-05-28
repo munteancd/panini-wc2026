@@ -6,6 +6,9 @@
   --missing: #2c3a55;
   --have: #22c55e;
   --dup: #f59e0b;
+  --dup2: #fca5a5;
+  --dup3: #f87171;
+  --dup4: #dc2626;
   --accent: #0a3d62;
   --danger: #ef4444;
 }
@@ -87,6 +90,18 @@ main {
 
 .sticker.have { background: var(--have); color: #062c0f; }
 .sticker.dup  { background: var(--dup);  color: #3a1e00; }
+.sticker.dup2 { background: var(--dup2); color: #3a0a0a; }
+.sticker.dup3 { background: var(--dup3); color: #3a0a0a; }
+.sticker.dup4 { background: var(--dup4); color: #fff; }
+
+.dup-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  margin-left: 1px;
+  vertical-align: super;
+  line-height: 1;
+}
 
 .bottom-nav {
   position: fixed;
@@ -226,6 +241,9 @@ main {
 
 .collection-cell.have { border-color: var(--have); }
 .collection-cell.dup  { border-color: var(--dup); }
+.collection-cell.dup2 { border-color: var(--dup2); }
+.collection-cell.dup3 { border-color: var(--dup3); }
+.collection-cell.dup4 { border-color: var(--dup4); }
 
 .collection-cell img,
 .collection-placeholder {
@@ -343,4 +361,7 @@ main {
 }
 .preview-state.have { background: var(--have); color: #062c0f; }
 .preview-state.dup  { background: var(--dup); color: #3a1e00; }
+.preview-state.dup2 { background: var(--dup2); color: #3a0a0a; }
+.preview-state.dup3 { background: var(--dup3); color: #3a0a0a; }
+.preview-state.dup4 { background: var(--dup4); color: #fff; }
 .preview-state.missing { background: var(--missing); color: var(--muted); }
