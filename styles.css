@@ -146,6 +146,26 @@ main {
 .btn.danger { background: var(--danger); }
 .btn.ghost  { background: transparent; border: 1px solid var(--muted); }
 
+.export-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+.export-label { color: var(--muted); font-size: 0.85rem; margin-right: 2px; }
+.btn-export {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-export:active { opacity: 0.8; }
+
 .dupes-section h3 {
   margin: 12px 0 4px;
   font-size: 0.95rem;

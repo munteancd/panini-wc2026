@@ -1,10 +1,14 @@
-const CACHE_VERSION = "panini-wc26-v6";
+const CACHE_VERSION = "panini-wc26-v7";
 const IMAGES_CACHE = "panini-wc26-images-v1";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./export.js",
+  "./vendor/exceljs.min.js",
+  "./vendor/jspdf.umd.min.js",
+  "./vendor/jspdf.plugin.autotable.min.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

@@ -441,6 +441,7 @@ function renderMissing() {
     <p style="color:var(--muted); margin:8px 0;">Total lipsă: <strong>${total}</strong></p>
   `;
   root.appendChild(actions);
+  if (typeof renderExportBar === "function") renderExportBar(root, "missing");
 
   if (total === 0) {
     const done = document.createElement("p");
@@ -506,6 +507,7 @@ function renderDupes() {
     <p style="color:var(--muted); margin:8px 0;">Total dubluri: <strong>${total}</strong></p>
   `;
   root.appendChild(actions);
+  if (typeof renderExportBar === "function") renderExportBar(root, "dupes");
 
   if (total === 0) {
     const empty = document.createElement("p");
@@ -570,6 +572,7 @@ function renderCollection() {
   intro.style.margin = "4px 0 12px";
   intro.textContent = "Imaginile sunt agregate de pe laststicker.com (acoperire parțială, crește săptămânal). FWC și Coca-Cola nu sunt disponibile.";
   root.appendChild(intro);
+  if (typeof renderExportBar === "function") renderExportBar(root, "owned");
 
   let totalOwned = 0;
   let renderedAny = false;
