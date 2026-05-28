@@ -69,6 +69,16 @@ fetch("./data/matches.json")
   })
   .catch(() => {});
 
+let CLUBS = {};
+fetch("./data/clubs.json")
+  .then((r) => (r.ok ? r.json() : {}))
+  .then((d) => {
+    CLUBS = d;
+    const tab = document.getElementById("tab-stats");
+    if (tab && tab.classList.contains("active")) renderStats();
+  })
+  .catch(() => {});
+
 function allStickerCodes() {
   const out = [];
   for (const s of SECTIONS) {
@@ -687,6 +697,44 @@ function renderStats() {
   }
   confCard.innerHTML = confHtml;
   root.appendChild(confCard);
+
+  // --- by club (owned players) ---
+  const clubCount = {};
+  let ownedNoClub = 0;
+  for (const code in data.stickers) {
+    if (!isOwned(getState(data, code))) continue;
+    const club = CLUBS[code];
+    if (club) clubCount[club] = (clubCount[club] || 0) + 1;
+    else {
+      const nm = STICKER_NAMES[code];
+      if (nm && !/logo|photo|badge/i.test(nm)) ownedNoClub++;
+    }
+  }
+  const clubList = Object.entries(clubCount).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+  const clubCard = document.createElement("div");
+  clubCard.className = "stat-card";
+  if (!Object.keys(CLUBS).length) {
+    clubCard.innerHTML = `<h3 class="stat-title">⚽ Pe cluburi</h3><p style="color:var(--muted);font-size:0.85rem;">Se încarcă…</p>`;
+  } else if (!clubList.length) {
+    clubCard.innerHTML = `<h3 class="stat-title">⚽ Pe cluburi</h3><p style="color:var(--muted);font-size:0.85rem;">Nu ai încă jucători cu club cunoscut.</p>`;
+  } else {
+    const maxC = clubList[0][1];
+    let html = `<h3 class="stat-title">⚽ Jucătorii mei pe cluburi (${clubList.length} cluburi)</h3>`;
+    for (const [club, n] of clubList) {
+      const p = Math.round((n / maxC) * 100);
+      html += `
+        <div class="stat-line">
+          <div class="stat-line-top"><span>${club}</span><strong>${n}</strong></div>
+          ${statBar(p, "var(--accent-bar)")}
+        </div>`;
+    }
+    if (ownedNoClub) {
+      html += `<p style="color:var(--muted);font-size:0.8rem;margin-top:8px;">+ ${ownedNoClub} jucători fără club cunoscut (loturile se completează pe Wikipedia până la turneu).</p>`;
+    }
+    clubCard.innerHTML = html;
+  }
+  root.appendChild(clubCard);
 
   // --- all sections sorted by completion ---
   const all = SECTIONS.map((s) => {

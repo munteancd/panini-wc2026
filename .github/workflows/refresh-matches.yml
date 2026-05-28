@@ -1,4 +1,4 @@
-name: Refresh match schedule
+name: Refresh schedule & clubs
 
 on:
   schedule:
@@ -18,7 +18,7 @@ jobs:
         run: |
           TODAY=$(date -u +%Y-%m-%d)
           # Only run around the tournament window, when knockout teams get decided.
-          if [[ "$TODAY" > "2026-06-09" && "$TODAY" < "2026-07-21" ]]; then
+          if [[ "$TODAY" > "2026-05-31" && "$TODAY" < "2026-07-21" ]]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           else
             echo "Outside tournament window ($TODAY). Skipping."
@@ -39,14 +39,17 @@ jobs:
       - name: Rebuild matches.json from Wikipedia
         run: python scripts/refresh_matches.py
 
+      - name: Rebuild clubs.json from Wikipedia
+        run: python scripts/refresh_clubs.py || echo "clubs refresh skipped (squads not ready)"
+
       - name: Commit and push if changed
         run: |
           git config user.name "panini-bot"
           git config user.email "actions@github.com"
-          git add data/matches.json
+          git add data/matches.json data/clubs.json
           if git diff --cached --quiet; then
-            echo "Schedule unchanged."
+            echo "Schedule & clubs unchanged."
             exit 0
           fi
-          git commit -m "Refresh match schedule from Wikipedia"
+          git commit -m "Refresh schedule & clubs from Wikipedia"
           git push
