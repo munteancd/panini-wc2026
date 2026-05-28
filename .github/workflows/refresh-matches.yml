@@ -1,0 +1,52 @@
+name: Refresh match schedule
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-date:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - id: check
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          # Only run around the tournament window, when knockout teams get decided.
+          if [[ "$TODAY" > "2026-06-09" && "$TODAY" < "2026-07-21" ]]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Outside tournament window ($TODAY). Skipping."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  refresh:
+    needs: check-date
+    if: needs.check-date.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Rebuild matches.json from Wikipedia
+        run: python scripts/refresh_matches.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "panini-bot"
+          git config user.email "actions@github.com"
+          git add data/matches.json
+          if git diff --cached --quiet; then
+            echo "Schedule unchanged."
+            exit 0
+          fi
+          git commit -m "Refresh match schedule from Wikipedia"
+          git push
