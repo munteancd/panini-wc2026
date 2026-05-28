@@ -572,7 +572,6 @@ function renderCollection() {
   intro.style.margin = "4px 0 12px";
   intro.textContent = "Imaginile sunt agregate de pe laststicker.com (acoperire parțială, crește săptămânal). FWC și Coca-Cola nu sunt disponibile.";
   root.appendChild(intro);
-  if (typeof renderExportBar === "function") renderExportBar(root, "owned");
 
   let totalOwned = 0;
   let renderedAny = false;

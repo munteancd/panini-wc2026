@@ -216,9 +216,82 @@ async function exportPdf(kind, withPhotos) {
   showToast("PDF descărcat");
 }
 
+// ---------- PNG (imagine partajabilă, desenată pe canvas) ----------
+async function exportPng(kind) {
+  const { title, fileBase, rows, hasCount } = exp_buildRows(kind);
+  showToast("Generez imaginea…");
+
+  // grupare pe țări, păstrând ordinea
+  const groups = [];
+  let cur = null;
+  for (const r of rows) {
+    if (!cur || cur.country !== r.country) { cur = { country: r.country, items: [] }; groups.push(cur); }
+    cur.items.push(hasCount && r.count > 1 ? `${r.code}×${r.count}` : r.code);
+  }
+
+  const W = 680, padX = 24, padTop = 74, lineH = 26, sectionGap = 14, headH = 28;
+  const codeFont = "16px -apple-system, 'Segoe UI', Roboto, sans-serif";
+  const headFont = "bold 17px -apple-system, 'Segoe UI', Roboto, sans-serif";
+  const maxTextW = W - padX * 2;
+
+  const meas = document.createElement("canvas").getContext("2d");
+  meas.font = codeFont;
+  function wrap(items) {
+    const lines = [];
+    let line = "";
+    for (const it of items) {
+      const test = line ? line + ", " + it : it;
+      if (line && meas.measureText(test).width > maxTextW) { lines.push(line); line = it; }
+      else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  const layout = groups.map((g) => ({ country: g.country, count: g.items.length, lines: wrap(g.items) }));
+  let h = padTop;
+  for (const g of layout) h += headH + g.lines.length * lineH + sectionGap;
+  h += 16;
+
+  const scale = 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = W * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(scale, scale);
+
+  ctx.fillStyle = "#0f1724";
+  ctx.fillRect(0, 0, W, h);
+
+  ctx.fillStyle = "#e6edf5";
+  ctx.font = "bold 24px -apple-system, 'Segoe UI', Roboto, sans-serif";
+  ctx.fillText(`${title} — ${rows.length}`, padX, 40);
+  ctx.fillStyle = "#93a3b8";
+  ctx.font = "13px -apple-system, 'Segoe UI', Roboto, sans-serif";
+  ctx.fillText("Panini WC26", padX, 60);
+
+  let y = padTop;
+  for (const g of layout) {
+    ctx.fillStyle = "#9cc4ff";
+    ctx.font = headFont;
+    ctx.fillText(`${g.country} (${g.count})`, padX, y + 18);
+    y += headH;
+    ctx.fillStyle = "#e6edf5";
+    ctx.font = codeFont;
+    for (const line of g.lines) { ctx.fillText(line, padX, y + 16); y += lineH; }
+    y += sectionGap;
+  }
+
+  await new Promise((res) =>
+    canvas.toBlob((b) => { exp_download(b, `${fileBase}-${exp_dateStamp()}.png`); res(); }, "image/png")
+  );
+  showToast("PNG descărcat");
+}
+
 // ---------- UI ----------
 function renderExportBar(container, kind) {
   const withPhotos = kind === "dupes"; // poze doar la dubluri
+  const allowPng = kind === "dupes" || kind === "missing"; // PNG doar la dubluri/lipsă
   const wrap = document.createElement("div");
   wrap.className = "export-bar";
   wrap.innerHTML = `
@@ -227,10 +300,12 @@ function renderExportBar(container, kind) {
     <button class="btn-export" data-fmt="excel">Excel</button>
     <button class="btn-export" data-fmt="pdf">PDF</button>
     <button class="btn-export" data-fmt="word">Word</button>
+    ${allowPng ? '<button class="btn-export" data-fmt="png">PNG</button>' : ""}
   `;
   wrap.querySelector('[data-fmt="txt"]').onclick = () => exportTxt(kind);
   wrap.querySelector('[data-fmt="excel"]').onclick = () => exportExcel(kind, withPhotos);
   wrap.querySelector('[data-fmt="pdf"]').onclick = () => exportPdf(kind, withPhotos);
   wrap.querySelector('[data-fmt="word"]').onclick = () => exportWord(kind);
+  if (allowPng) wrap.querySelector('[data-fmt="png"]').onclick = () => exportPng(kind);
   container.appendChild(wrap);
 }
