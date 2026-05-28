@@ -1,4 +1,4 @@
-const CACHE_VERSION = "panini-wc26-v9";
+const CACHE_VERSION = "panini-wc26-v10";
 const IMAGES_CACHE = "panini-wc26-images-v1";
 const ASSETS = [
   "./",
@@ -13,6 +13,7 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./data/sticker-names.json",
+  "./data/matches.json",
 ];
 
 self.addEventListener("install", (e) => {

@@ -1,0 +1,726 @@
+{
+  "timezone": "Europe/Bucharest (EEST, UTC+3)",
+  "stage": "group",
+  "matches": [
+    {
+      "n": 1,
+      "group": "A",
+      "date": "2026-06-11",
+      "time": "22:00",
+      "team1": "MEX",
+      "team2": "RSA",
+      "stadium": "Estadio Azteca",
+      "city": "Mexico City"
+    },
+    {
+      "n": 2,
+      "group": "A",
+      "date": "2026-06-12",
+      "time": "05:00",
+      "team1": "KOR",
+      "team2": "CZE",
+      "stadium": "Estadio Akron",
+      "city": "Zapopan"
+    },
+    {
+      "n": 3,
+      "group": "B",
+      "date": "2026-06-12",
+      "time": "22:00",
+      "team1": "CAN",
+      "team2": "BIH",
+      "stadium": "BMO Field",
+      "city": "Toronto"
+    },
+    {
+      "n": 4,
+      "group": "D",
+      "date": "2026-06-13",
+      "time": "04:00",
+      "team1": "USA",
+      "team2": "PAR",
+      "stadium": "SoFi Stadium",
+      "city": "Inglewood"
+    },
+    {
+      "n": 5,
+      "group": "C",
+      "date": "2026-06-14",
+      "time": "04:00",
+      "team1": "HAI",
+      "team2": "SCO",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
+      "n": 6,
+      "group": "D",
+      "date": "2026-06-14",
+      "time": "07:00",
+      "team1": "AUS",
+      "team2": "TUR",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
+      "n": 7,
+      "group": "C",
+      "date": "2026-06-14",
+      "time": "01:00",
+      "team1": "BRA",
+      "team2": "MAR",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 8,
+      "group": "B",
+      "date": "2026-06-13",
+      "time": "22:00",
+      "team1": "QAT",
+      "team2": "SUI",
+      "stadium": "Levi's Stadium",
+      "city": "Santa Clara"
+    },
+    {
+      "n": 9,
+      "group": "E",
+      "date": "2026-06-15",
+      "time": "02:00",
+      "team1": "CIV",
+      "team2": "ECU",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
+      "n": 10,
+      "group": "E",
+      "date": "2026-06-14",
+      "time": "20:00",
+      "team1": "GER",
+      "team2": "CUW",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 11,
+      "group": "F",
+      "date": "2026-06-14",
+      "time": "23:00",
+      "team1": "NED",
+      "team2": "JPN",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
+      "n": 12,
+      "group": "F",
+      "date": "2026-06-15",
+      "time": "05:00",
+      "team1": "SWE",
+      "team2": "TUN",
+      "stadium": "Estadio BBVA",
+      "city": "Guadalupe"
+    },
+    {
+      "n": 13,
+      "group": "H",
+      "date": "2026-06-16",
+      "time": "01:00",
+      "team1": "KSA",
+      "team2": "URU",
+      "stadium": "Hard Rock Stadium",
+      "city": "Miami Gardens"
+    },
+    {
+      "n": 14,
+      "group": "H",
+      "date": "2026-06-15",
+      "time": "19:00",
+      "team1": "ESP",
+      "team2": "CPV",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    },
+    {
+      "n": 15,
+      "group": "G",
+      "date": "2026-06-16",
+      "time": "04:00",
+      "team1": "IRN",
+      "team2": "NZL",
+      "stadium": "SoFi Stadium",
+      "city": "Inglewood"
+    },
+    {
+      "n": 16,
+      "group": "G",
+      "date": "2026-06-15",
+      "time": "22:00",
+      "team1": "BEL",
+      "team2": "EGY",
+      "stadium": "Lumen Field",
+      "city": "Seattle"
+    },
+    {
+      "n": 17,
+      "group": "I",
+      "date": "2026-06-16",
+      "time": "22:00",
+      "team1": "FRA",
+      "team2": "SEN",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 18,
+      "group": "I",
+      "date": "2026-06-17",
+      "time": "01:00",
+      "team1": "IRQ",
+      "team2": "NOR",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
+      "n": 19,
+      "group": "J",
+      "date": "2026-06-17",
+      "time": "04:00",
+      "team1": "ARG",
+      "team2": "ALG",
+      "stadium": "Arrowhead Stadium",
+      "city": "Kansas City"
+    },
+    {
+      "n": 20,
+      "group": "J",
+      "date": "2026-06-17",
+      "time": "07:00",
+      "team1": "AUT",
+      "team2": "JOR",
+      "stadium": "Levi's Stadium",
+      "city": "Santa Clara"
+    },
+    {
+      "n": 21,
+      "group": "L",
+      "date": "2026-06-18",
+      "time": "02:00",
+      "team1": "GHA",
+      "team2": "PAN",
+      "stadium": "BMO Field",
+      "city": "Toronto"
+    },
+    {
+      "n": 22,
+      "group": "L",
+      "date": "2026-06-17",
+      "time": "23:00",
+      "team1": "ENG",
+      "team2": "CRO",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
+      "n": 23,
+      "group": "K",
+      "date": "2026-06-17",
+      "time": "20:00",
+      "team1": "POR",
+      "team2": "COD",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 24,
+      "group": "K",
+      "date": "2026-06-18",
+      "time": "05:00",
+      "team1": "UZB",
+      "team2": "COL",
+      "stadium": "Estadio Azteca",
+      "city": "Mexico City"
+    },
+    {
+      "n": 25,
+      "group": "A",
+      "date": "2026-06-18",
+      "time": "19:00",
+      "team1": "CZE",
+      "team2": "RSA",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    },
+    {
+      "n": 26,
+      "group": "B",
+      "date": "2026-06-18",
+      "time": "22:00",
+      "team1": "SUI",
+      "team2": "BIH",
+      "stadium": "SoFi Stadium",
+      "city": "Inglewood"
+    },
+    {
+      "n": 27,
+      "group": "B",
+      "date": "2026-06-19",
+      "time": "01:00",
+      "team1": "CAN",
+      "team2": "QAT",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
+      "n": 28,
+      "group": "A",
+      "date": "2026-06-19",
+      "time": "04:00",
+      "team1": "MEX",
+      "team2": "KOR",
+      "stadium": "Estadio Akron",
+      "city": "Zapopan"
+    },
+    {
+      "n": 29,
+      "group": "C",
+      "date": "2026-06-20",
+      "time": "03:30",
+      "team1": "BRA",
+      "team2": "HAI",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
+      "n": 30,
+      "group": "C",
+      "date": "2026-06-20",
+      "time": "01:00",
+      "team1": "SCO",
+      "team2": "MAR",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
+      "n": 31,
+      "group": "D",
+      "date": "2026-06-20",
+      "time": "06:00",
+      "team1": "TUR",
+      "team2": "PAR",
+      "stadium": "Levi's Stadium",
+      "city": "Santa Clara"
+    },
+    {
+      "n": 32,
+      "group": "D",
+      "date": "2026-06-19",
+      "time": "22:00",
+      "team1": "USA",
+      "team2": "AUS",
+      "stadium": "Lumen Field",
+      "city": "Seattle"
+    },
+    {
+      "n": 33,
+      "group": "E",
+      "date": "2026-06-20",
+      "time": "23:00",
+      "team1": "GER",
+      "team2": "CIV",
+      "stadium": "BMO Field",
+      "city": "Toronto"
+    },
+    {
+      "n": 34,
+      "group": "E",
+      "date": "2026-06-21",
+      "time": "03:00",
+      "team1": "ECU",
+      "team2": "CUW",
+      "stadium": "Arrowhead Stadium",
+      "city": "Kansas City"
+    },
+    {
+      "n": 35,
+      "group": "F",
+      "date": "2026-06-20",
+      "time": "20:00",
+      "team1": "NED",
+      "team2": "SWE",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 36,
+      "group": "F",
+      "date": "2026-06-21",
+      "time": "07:00",
+      "team1": "TUN",
+      "team2": "JPN",
+      "stadium": "Estadio BBVA",
+      "city": "Guadalupe"
+    },
+    {
+      "n": 37,
+      "group": "H",
+      "date": "2026-06-22",
+      "time": "01:00",
+      "team1": "URU",
+      "team2": "CPV",
+      "stadium": "Hard Rock Stadium",
+      "city": "Miami Gardens"
+    },
+    {
+      "n": 38,
+      "group": "H",
+      "date": "2026-06-21",
+      "time": "19:00",
+      "team1": "ESP",
+      "team2": "KSA",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    },
+    {
+      "n": 39,
+      "group": "G",
+      "date": "2026-06-21",
+      "time": "22:00",
+      "team1": "BEL",
+      "team2": "IRN",
+      "stadium": "SoFi Stadium",
+      "city": "Inglewood"
+    },
+    {
+      "n": 40,
+      "group": "G",
+      "date": "2026-06-22",
+      "time": "04:00",
+      "team1": "NZL",
+      "team2": "EGY",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
+      "n": 41,
+      "group": "I",
+      "date": "2026-06-23",
+      "time": "03:00",
+      "team1": "NOR",
+      "team2": "SEN",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 42,
+      "group": "I",
+      "date": "2026-06-23",
+      "time": "00:00",
+      "team1": "FRA",
+      "team2": "IRQ",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
+      "n": 43,
+      "group": "J",
+      "date": "2026-06-22",
+      "time": "20:00",
+      "team1": "ARG",
+      "team2": "AUT",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
+      "n": 44,
+      "group": "J",
+      "date": "2026-06-23",
+      "time": "06:00",
+      "team1": "JOR",
+      "team2": "ALG",
+      "stadium": "Levi's Stadium",
+      "city": "Santa Clara"
+    },
+    {
+      "n": 45,
+      "group": "L",
+      "date": "2026-06-23",
+      "time": "23:00",
+      "team1": "ENG",
+      "team2": "GHA",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
+      "n": 46,
+      "group": "L",
+      "date": "2026-06-24",
+      "time": "02:00",
+      "team1": "PAN",
+      "team2": "CRO",
+      "stadium": "BMO Field",
+      "city": "Toronto"
+    },
+    {
+      "n": 47,
+      "group": "K",
+      "date": "2026-06-23",
+      "time": "20:00",
+      "team1": "POR",
+      "team2": "UZB",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 48,
+      "group": "K",
+      "date": "2026-06-24",
+      "time": "05:00",
+      "team1": "COL",
+      "team2": "COD",
+      "stadium": "Estadio Akron",
+      "city": "Zapopan"
+    },
+    {
+      "n": 49,
+      "group": "C",
+      "date": "2026-06-25",
+      "time": "01:00",
+      "team1": "SCO",
+      "team2": "BRA",
+      "stadium": "Hard Rock Stadium",
+      "city": "Miami Gardens"
+    },
+    {
+      "n": 50,
+      "group": "C",
+      "date": "2026-06-25",
+      "time": "01:00",
+      "team1": "MAR",
+      "team2": "HAI",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    },
+    {
+      "n": 51,
+      "group": "B",
+      "date": "2026-06-24",
+      "time": "22:00",
+      "team1": "SUI",
+      "team2": "CAN",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
+      "n": 52,
+      "group": "B",
+      "date": "2026-06-24",
+      "time": "22:00",
+      "team1": "BIH",
+      "team2": "QAT",
+      "stadium": "Lumen Field",
+      "city": "Seattle"
+    },
+    {
+      "n": 53,
+      "group": "A",
+      "date": "2026-06-25",
+      "time": "04:00",
+      "team1": "CZE",
+      "team2": "MEX",
+      "stadium": "Estadio Azteca",
+      "city": "Mexico City"
+    },
+    {
+      "n": 54,
+      "group": "A",
+      "date": "2026-06-25",
+      "time": "04:00",
+      "team1": "RSA",
+      "team2": "KOR",
+      "stadium": "Estadio BBVA",
+      "city": "Guadalupe"
+    },
+    {
+      "n": 55,
+      "group": "E",
+      "date": "2026-06-25",
+      "time": "23:00",
+      "team1": "CUW",
+      "team2": "CIV",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
+      "n": 56,
+      "group": "E",
+      "date": "2026-06-25",
+      "time": "23:00",
+      "team1": "ECU",
+      "team2": "GER",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 57,
+      "group": "F",
+      "date": "2026-06-26",
+      "time": "02:00",
+      "team1": "JPN",
+      "team2": "SWE",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
+      "n": 58,
+      "group": "F",
+      "date": "2026-06-26",
+      "time": "02:00",
+      "team1": "TUN",
+      "team2": "NED",
+      "stadium": "Arrowhead Stadium",
+      "city": "Kansas City"
+    },
+    {
+      "n": 59,
+      "group": "D",
+      "date": "2026-06-26",
+      "time": "05:00",
+      "team1": "TUR",
+      "team2": "USA",
+      "stadium": "SoFi Stadium",
+      "city": "Inglewood"
+    },
+    {
+      "n": 60,
+      "group": "D",
+      "date": "2026-06-26",
+      "time": "05:00",
+      "team1": "PAR",
+      "team2": "AUS",
+      "stadium": "Levi's Stadium",
+      "city": "Santa Clara"
+    },
+    {
+      "n": 61,
+      "group": "I",
+      "date": "2026-06-26",
+      "time": "22:00",
+      "team1": "NOR",
+      "team2": "FRA",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
+      "n": 62,
+      "group": "I",
+      "date": "2026-06-26",
+      "time": "22:00",
+      "team1": "SEN",
+      "team2": "IRQ",
+      "stadium": "BMO Field",
+      "city": "Toronto"
+    },
+    {
+      "n": 63,
+      "group": "G",
+      "date": "2026-06-27",
+      "time": "06:00",
+      "team1": "EGY",
+      "team2": "IRN",
+      "stadium": "Lumen Field",
+      "city": "Seattle"
+    },
+    {
+      "n": 64,
+      "group": "G",
+      "date": "2026-06-27",
+      "time": "06:00",
+      "team1": "NZL",
+      "team2": "BEL",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
+      "n": 65,
+      "group": "H",
+      "date": "2026-06-27",
+      "time": "03:00",
+      "team1": "CPV",
+      "team2": "KSA",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 66,
+      "group": "H",
+      "date": "2026-06-27",
+      "time": "03:00",
+      "team1": "URU",
+      "team2": "ESP",
+      "stadium": "Estadio Akron",
+      "city": "Zapopan"
+    },
+    {
+      "n": 67,
+      "group": "L",
+      "date": "2026-06-28",
+      "time": "00:00",
+      "team1": "PAN",
+      "team2": "ENG",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 68,
+      "group": "L",
+      "date": "2026-06-28",
+      "time": "00:00",
+      "team1": "CRO",
+      "team2": "GHA",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
+      "n": 69,
+      "group": "J",
+      "date": "2026-06-28",
+      "time": "05:00",
+      "team1": "ALG",
+      "team2": "AUT",
+      "stadium": "Arrowhead Stadium",
+      "city": "Kansas City"
+    },
+    {
+      "n": 70,
+      "group": "J",
+      "date": "2026-06-28",
+      "time": "05:00",
+      "team1": "JOR",
+      "team2": "ARG",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
+      "n": 71,
+      "group": "K",
+      "date": "2026-06-28",
+      "time": "02:30",
+      "team1": "COL",
+      "team2": "POR",
+      "stadium": "Hard Rock Stadium",
+      "city": "Miami Gardens"
+    },
+    {
+      "n": 72,
+      "group": "K",
+      "date": "2026-06-28",
+      "time": "02:30",
+      "team1": "COD",
+      "team2": "UZB",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    }
+  ]
+}

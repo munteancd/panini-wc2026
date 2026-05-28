@@ -59,6 +59,16 @@ fetch("./data/sticker-names.json")
   .then((d) => { STICKER_NAMES = d; })
   .catch(() => {});
 
+let MATCHES = [];
+fetch("./data/matches.json")
+  .then((r) => (r.ok ? r.json() : { matches: [] }))
+  .then((d) => {
+    MATCHES = d.matches || [];
+    const tab = document.getElementById("tab-matches");
+    if (tab && tab.classList.contains("active")) renderMatches();
+  })
+  .catch(() => {});
+
 function allStickerCodes() {
   const out = [];
   for (const s of SECTIONS) {
@@ -249,6 +259,7 @@ function renderAlbum() {
   for (const s of SECTIONS) {
     const sec = document.createElement("div");
     sec.className = "section";
+    sec.dataset.code = s.code;
     const { owned, total } = sectionCounts(s);
 
     const header = document.createElement("div");
@@ -354,6 +365,7 @@ function switchTab(name) {
   if (name === "dupes") renderDupes();
   if (name === "missing") renderMissing();
   if (name === "collection") renderCollection();
+  if (name === "matches") renderMatches();
   if (name === "stats") renderStats();
   if (name === "settings") renderSettings();
 }
@@ -776,6 +788,94 @@ function renderCollection() {
     tally.textContent = `Total țări bifate: ${totalOwned} stickere.`;
     root.appendChild(tally);
   }
+}
+
+function goToTeam(code) {
+  if (!sectionByCode(code)) return;
+  switchTab("album");
+  searchQuery = "";
+  const si = document.getElementById("search-input");
+  if (si) si.value = "";
+  applySearchFilter();
+  const sec = document.querySelector(`#tab-album .section[data-code="${code}"]`);
+  if (sec) {
+    sec.classList.remove("collapsed");
+    sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+const RO_DAYS = ["duminică", "luni", "marți", "miercuri", "joi", "vineri", "sâmbătă"];
+const RO_MONTHS = ["ianuarie","februarie","martie","aprilie","mai","iunie",
+  "iulie","august","septembrie","octombrie","noiembrie","decembrie"];
+
+function formatRoDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  const day = RO_DAYS[dt.getDay()];
+  return `${day.charAt(0).toUpperCase() + day.slice(1)}, ${d} ${RO_MONTHS[m - 1]}`;
+}
+
+function teamChip(code) {
+  const s = sectionByCode(code);
+  const flag = s ? s.flag : "";
+  const name = s ? s.name : code;
+  return `<button class="match-team" data-code="${code}">${flag} ${name}</button>`;
+}
+
+function renderMatches() {
+  const root = document.getElementById("tab-matches");
+  root.innerHTML = "";
+
+  if (!MATCHES.length) {
+    const p = document.createElement("p");
+    p.style.color = "var(--muted)";
+    p.textContent = "Se încarcă orarul…";
+    root.appendChild(p);
+    return;
+  }
+
+  const note = document.createElement("p");
+  note.className = "match-note";
+  note.textContent = "Faza grupelor · ore în fus orar România (EEST). Tap pe o echipă → pagina ei din album.";
+  root.appendChild(note);
+
+  // group by date
+  const byDate = new Map();
+  for (const m of MATCHES) {
+    if (!byDate.has(m.date)) byDate.set(m.date, []);
+    byDate.get(m.date).push(m);
+  }
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+
+  for (const [date, list] of [...byDate.entries()].sort()) {
+    list.sort((a, b) => a.time.localeCompare(b.time) || a.n - b.n);
+    const day = document.createElement("div");
+    day.className = "match-day" + (date === todayIso ? " match-today" : "") + (date < todayIso ? " match-past" : "");
+
+    const h = document.createElement("h3");
+    h.className = "match-date";
+    h.textContent = formatRoDate(date) + (date === todayIso ? " · AZI" : "");
+    day.appendChild(h);
+
+    for (const m of list) {
+      const row = document.createElement("div");
+      row.className = "match-row";
+      row.innerHTML = `
+        <div class="match-time">${m.time}</div>
+        <div class="match-teams">
+          ${teamChip(m.team1)}<span class="match-vs">–</span>${teamChip(m.team2)}
+        </div>
+        <div class="match-meta"><span class="match-group">Gr. ${m.group}</span> ${m.stadium}, ${m.city}</div>
+      `;
+      day.appendChild(row);
+    }
+    root.appendChild(day);
+  }
+
+  root.querySelectorAll(".match-team").forEach((b) => {
+    b.addEventListener("click", () => goToTeam(b.dataset.code));
+  });
 }
 
 function isValidBackup(obj) {
