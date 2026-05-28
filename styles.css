@@ -235,6 +235,12 @@ main {
   border-radius: 4px;
 }
 .match-team:active { background: var(--accent); }
+.match-team-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-style: italic;
+  padding: 2px 2px;
+}
 .match-vs { color: var(--muted); }
 .match-meta { grid-area: meta; color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
 .match-group {
@@ -246,6 +252,7 @@ main {
   font-size: 0.72rem;
   margin-right: 4px;
 }
+.match-group.match-ko { background: #6d28d9; }
 
 /* ---- Statistici ---- */
 .stat-card {

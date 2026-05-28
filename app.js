@@ -822,6 +822,26 @@ function teamChip(code) {
   return `<button class="match-team" data-code="${code}">${flag} ${name}</button>`;
 }
 
+function matchSideChip(code, label) {
+  if (code) return teamChip(code);
+  return `<span class="match-team-label">${label || "—"}</span>`;
+}
+
+const STAGE_LABELS = {
+  group: null,
+  R32: "16-imi",
+  R16: "Optimi",
+  QF: "Sferturi",
+  SF: "Semifinale",
+  "3rd": "Finala mică",
+  Final: "FINALĂ",
+};
+
+function matchBadge(m) {
+  if (m.stage === "group") return `<span class="match-group">Gr. ${m.group}</span>`;
+  return `<span class="match-group match-ko">${STAGE_LABELS[m.stage] || m.stage}</span>`;
+}
+
 function renderMatches() {
   const root = document.getElementById("tab-matches");
   root.innerHTML = "";
@@ -836,7 +856,7 @@ function renderMatches() {
 
   const note = document.createElement("p");
   note.className = "match-note";
-  note.textContent = "Faza grupelor · ore în fus orar România (EEST). Tap pe o echipă → pagina ei din album.";
+  note.textContent = "Ore în fus orar România (EEST). Tap pe o echipă → pagina ei din album. La knockout, echipele apar când se decid.";
   root.appendChild(note);
 
   // group by date
@@ -864,9 +884,9 @@ function renderMatches() {
       row.innerHTML = `
         <div class="match-time">${m.time}</div>
         <div class="match-teams">
-          ${teamChip(m.team1)}<span class="match-vs">–</span>${teamChip(m.team2)}
+          ${matchSideChip(m.team1, m.label1)}<span class="match-vs">–</span>${matchSideChip(m.team2, m.label2)}
         </div>
-        <div class="match-meta"><span class="match-group">Gr. ${m.group}</span> ${m.stadium}, ${m.city}</div>
+        <div class="match-meta">${matchBadge(m)} ${m.stadium}, ${m.city}</div>
       `;
       day.appendChild(row);
     }
