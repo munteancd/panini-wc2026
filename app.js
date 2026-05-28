@@ -354,6 +354,7 @@ function switchTab(name) {
   if (name === "dupes") renderDupes();
   if (name === "missing") renderMissing();
   if (name === "collection") renderCollection();
+  if (name === "stats") renderStats();
   if (name === "settings") renderSettings();
 }
 
@@ -561,6 +562,139 @@ const COUNTRY_CODES = new Set([
   "BEL","EGY","IRN","NZL","ESP","CPV","KSA","URU","FRA","SEN","IRQ","NOR",
   "ARG","ALG","AUT","JOR","POR","COD","UZB","COL","ENG","CRO","GHA","PAN",
 ]);
+
+const CONFEDERATIONS = {
+  UEFA:     ["CZE","SUI","GER","NED","SWE","BEL","ESP","FRA","NOR","AUT","POR","ENG","CRO","SCO","TUR","BIH"],
+  CONMEBOL: ["BRA","PAR","ECU","URU","ARG","COL"],
+  CAF:      ["RSA","MAR","CIV","TUN","EGY","CPV","SEN","ALG","COD","GHA"],
+  AFC:      ["KOR","QAT","AUS","JPN","IRN","KSA","IRQ","JOR","UZB"],
+  CONCACAF: ["MEX","CAN","HAI","USA","PAN","CUW"],
+  OFC:      ["NZL"],
+};
+const CONFED_LABELS = {
+  UEFA: "UEFA (Europa)",
+  CONMEBOL: "CONMEBOL (America de Sud)",
+  CAF: "CAF (Africa)",
+  AFC: "AFC (Asia)",
+  CONCACAF: "CONCACAF (America de Nord)",
+  OFC: "OFC (Oceania)",
+};
+
+function sectionByCode(code) {
+  return SECTIONS.find((s) => s.code === code);
+}
+
+function sectionMissingCodes(section) {
+  const out = [];
+  for (let i = section.start; i <= section.end; i++) {
+    const c = section.code + i;
+    if (!isOwned(getState(data, c))) out.push(c);
+  }
+  return out;
+}
+
+function statBar(pct, color) {
+  const c = color || "var(--have)";
+  return `<div class="stat-bar"><div class="stat-bar-fill" style="width:${pct}%;background:${c};"></div></div>`;
+}
+
+function renderStats() {
+  const root = document.getElementById("tab-stats");
+  root.innerHTML = "";
+
+  const countrySections = SECTIONS.filter((s) => COUNTRY_CODES.has(s.code));
+
+  // --- overall ---
+  let owned = 0, spares = 0, dupDistinct = 0;
+  for (const v of Object.values(data.stickers)) {
+    if (isOwned(v)) owned++;
+    if (isDup(v)) dupDistinct++;
+    spares += spareCount(v);
+  }
+  const total = allStickerCodes().length;
+  const pct = total ? Math.round((owned / total) * 100) : 0;
+
+  let teamsComplete = 0;
+  for (const s of countrySections) {
+    const c = sectionCounts(s);
+    if (c.owned === c.total) teamsComplete++;
+  }
+
+  const summary = document.createElement("div");
+  summary.className = "stat-card";
+  summary.innerHTML = `
+    <div class="stat-big">${owned} / ${total} <span class="stat-pct">(${pct}%)</span></div>
+    ${statBar(pct)}
+    <div class="stat-rows">
+      <div><span>Echipe complete</span><strong>${teamsComplete} / ${countrySections.length}</strong></div>
+      <div><span>Dubluri (exemplare)</span><strong>${spares}</strong></div>
+      <div><span>Stickere cu dublură</span><strong>${dupDistinct}</strong></div>
+    </div>
+  `;
+  root.appendChild(summary);
+
+  // --- almost complete (1-2 lipsă) ---
+  const almost = [];
+  for (const s of SECTIONS) {
+    const c = sectionCounts(s);
+    const miss = c.total - c.owned;
+    if (miss >= 1 && miss <= 2) almost.push({ s, owned: c.owned, total: c.total, miss });
+  }
+  almost.sort((a, b) => a.miss - b.miss || a.s.name.localeCompare(b.s.name));
+
+  if (almost.length) {
+    const card = document.createElement("div");
+    card.className = "stat-card";
+    let html = `<h3 class="stat-title">🔥 Aproape gata (${almost.length})</h3>`;
+    for (const a of almost) {
+      const codes = sectionMissingCodes(a.s).join(", ");
+      html += `<div class="stat-almost"><span>${a.s.flag} ${a.s.name} ${a.owned}/${a.total}</span><em>lipsă: ${codes}</em></div>`;
+    }
+    card.innerHTML = html;
+    root.appendChild(card);
+  }
+
+  // --- per confederation ---
+  const confCard = document.createElement("div");
+  confCard.className = "stat-card";
+  let confHtml = `<h3 class="stat-title">🌍 Pe confederații</h3>`;
+  for (const [key, codes] of Object.entries(CONFEDERATIONS)) {
+    let o = 0, t = 0;
+    for (const code of codes) {
+      const s = sectionByCode(code);
+      if (!s) continue;
+      const c = sectionCounts(s);
+      o += c.owned; t += c.total;
+    }
+    const p = t ? Math.round((o / t) * 100) : 0;
+    confHtml += `
+      <div class="stat-line">
+        <div class="stat-line-top"><span>${CONFED_LABELS[key]}</span><strong>${o}/${t} (${p}%)</strong></div>
+        ${statBar(p, "var(--accent-bar)")}
+      </div>`;
+  }
+  confCard.innerHTML = confHtml;
+  root.appendChild(confCard);
+
+  // --- all sections sorted by completion ---
+  const all = SECTIONS.map((s) => {
+    const c = sectionCounts(s);
+    return { s, owned: c.owned, total: c.total, pct: c.total ? Math.round((c.owned / c.total) * 100) : 0 };
+  }).sort((a, b) => b.pct - a.pct || a.s.name.localeCompare(b.s.name));
+
+  const listCard = document.createElement("div");
+  listCard.className = "stat-card";
+  let listHtml = `<h3 class="stat-title">📋 Toate secțiunile</h3>`;
+  for (const a of all) {
+    listHtml += `
+      <div class="stat-line">
+        <div class="stat-line-top"><span>${a.s.flag} ${a.s.name}</span><strong>${a.owned}/${a.total} (${a.pct}%)</strong></div>
+        ${statBar(a.pct)}
+      </div>`;
+  }
+  listCard.innerHTML = listHtml;
+  root.appendChild(listCard);
+}
 
 function renderCollection() {
   const root = document.getElementById("tab-collection");
