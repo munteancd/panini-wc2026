@@ -291,6 +291,53 @@ main {
 }
 .stat-bar-fill { height: 100%; border-radius: 4px; transition: width 0.2s; }
 
+.club-head { cursor: pointer; user-select: none; }
+.club-caret { color: var(--muted); font-size: 0.75rem; display: inline-block; width: 0.9em; }
+.club-details {
+  margin-top: 8px;
+  padding: 8px 0 2px;
+  border-top: 1px solid #ffffff10;
+}
+.club-details-count {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 8px;
+}
+.club-players {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+.club-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--missing);
+  border: none;
+  border-radius: 6px;
+  padding: 5px 7px;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+.club-player-img {
+  width: 26px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: #00000022;
+}
+.club-player-flag { font-size: 0.95rem; flex-shrink: 0; }
+.club-player-name {
+  font-size: 0.78rem;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .toast {
   position: fixed;
   bottom: 80px;

@@ -51,6 +51,13 @@ const SECTIONS = [
   { code: "CC",  name: "Coca-Cola",         flag: "🥤", start: 1, end: 14 },
 ];
 
+// Naționala (steag + nume) dedusă din prefixul de litere al codului: "ARG15" -> Argentina
+const SECTION_BY_CODE = Object.fromEntries(SECTIONS.map((s) => [s.code, s]));
+function natInfo(code) {
+  const m = String(code).match(/^[A-Za-z]+/);
+  return (m && SECTION_BY_CODE[m[0]]) || null;
+}
+
 const STORAGE_KEY = "panini-wc26-data";
 
 let STICKER_NAMES = {};
@@ -699,18 +706,26 @@ function renderStats() {
   root.appendChild(confCard);
 
   // --- by club (owned players) ---
-  const clubCount = {};
+  // Total stickere din album per club (pentru contorul "X din Y în album")
+  const clubTotal = {};
+  for (const code in CLUBS) {
+    const club = CLUBS[code];
+    clubTotal[club] = (clubTotal[club] || 0) + 1;
+  }
+  const clubOwned = {}; // club -> [coduri deținute]
   let ownedNoClub = 0;
   for (const code in data.stickers) {
     if (!isOwned(getState(data, code))) continue;
     const club = CLUBS[code];
-    if (club) clubCount[club] = (clubCount[club] || 0) + 1;
+    if (club) (clubOwned[club] || (clubOwned[club] = [])).push(code);
     else {
       const nm = STICKER_NAMES[code];
       if (nm && !/logo|photo|badge/i.test(nm)) ownedNoClub++;
     }
   }
-  const clubList = Object.entries(clubCount).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const clubList = Object.entries(clubOwned)
+    .map(([club, codes]) => [club, codes.length, codes])
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
   const clubCard = document.createElement("div");
   clubCard.className = "stat-card";
@@ -720,19 +735,61 @@ function renderStats() {
     clubCard.innerHTML = `<h3 class="stat-title">⚽ Pe cluburi</h3><p style="color:var(--muted);font-size:0.85rem;">Nu ai încă jucători cu club cunoscut.</p>`;
   } else {
     const maxC = clubList[0][1];
-    let html = `<h3 class="stat-title">⚽ Jucătorii mei pe cluburi (${clubList.length} cluburi)</h3>`;
-    for (const [club, n] of clubList) {
+    let html = `<h3 class="stat-title">⚽ Jucătorii mei pe cluburi (${clubList.length} cluburi)</h3>
+      <p style="color:var(--muted);font-size:0.78rem;margin:-4px 0 10px;">Apasă pe un club ca să vezi jucătorii tăi.</p>`;
+    for (const [club, n, codes] of clubList) {
       const p = Math.round((n / maxC) * 100);
+      const total = clubTotal[club] || n;
+      const players = codes
+        .map((c) => {
+          const nat = natInfo(c);
+          return { code: c, name: STICKER_NAMES[c] || c, flag: nat ? nat.flag : "", natName: nat ? nat.name : "" };
+        })
+        .sort((a, b) => a.natName.localeCompare(b.natName) || a.name.localeCompare(b.name));
+      const playersHtml = players
+        .map(
+          (pl) => `
+            <button class="club-player" data-code="${pl.code}">
+              <img class="club-player-img" src="./images/${pl.code}.jpg" alt="" loading="lazy">
+              <span class="club-player-flag">${pl.flag}</span>
+              <span class="club-player-name">${pl.name}</span>
+            </button>`
+        )
+        .join("");
       html += `
-        <div class="stat-line">
-          <div class="stat-line-top"><span>${club}</span><strong>${n}</strong></div>
+        <div class="stat-line club-row">
+          <div class="stat-line-top club-head"><span><span class="club-caret">▸</span> ${club}</span><strong>${n}</strong></div>
           ${statBar(p, "var(--accent-bar)")}
+          <div class="club-details" hidden>
+            <div class="club-details-count">${n} din ${total} în album</div>
+            <div class="club-players">${playersHtml}</div>
+          </div>
         </div>`;
     }
     if (ownedNoClub) {
       html += `<p style="color:var(--muted);font-size:0.8rem;margin-top:8px;">+ ${ownedNoClub} jucători fără club cunoscut (loturile se completează pe Wikipedia până la turneu).</p>`;
     }
     clubCard.innerHTML = html;
+    clubCard.addEventListener("click", (e) => {
+      const playerBtn = e.target.closest(".club-player");
+      if (playerBtn) {
+        openPreview(playerBtn.dataset.code);
+        return;
+      }
+      const head = e.target.closest(".club-head");
+      if (!head) return;
+      const row = head.closest(".club-row");
+      const details = row.querySelector(".club-details");
+      const caret = row.querySelector(".club-caret");
+      const opening = details.hasAttribute("hidden");
+      if (opening) {
+        details.removeAttribute("hidden");
+        if (caret) caret.textContent = "▾";
+      } else {
+        details.setAttribute("hidden", "");
+        if (caret) caret.textContent = "▸";
+      }
+    });
   }
   root.appendChild(clubCard);
 
