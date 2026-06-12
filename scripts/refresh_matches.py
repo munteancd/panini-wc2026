@@ -85,6 +85,18 @@ def ro_label(s):
     return s
 
 
+def match_num(b):
+    """Match number, from |Match N (unplayed) or the PMSR-Mxx report filename
+    (Wikipedia drops |Match N once a match has been played)."""
+    m = re.search(r"\|Match (\d+)", b)
+    if m:
+        return int(m.group(1))
+    m = re.search(r"PMSR-M0*(\d+)", b)
+    if m:
+        return int(m.group(1))
+    return None
+
+
 def parse_group(txt, g, matches):
     for b in re.findall(r"football box\|main(.*?)\n}}", txt, re.S):
         dm = re.search(r"\|date=\{\{Start date\|(\d+)\|(\d+)\|(\d+)\}\}", b)
@@ -95,7 +107,9 @@ def parse_group(txt, g, matches):
         date, time = to_ro(y, mo, d, hh, mm, oh, om)
         t1 = re.search(r"\|team1=\{\{#invoke:flag\|fb-rt\|(\w+)\}\}", b)
         t2 = re.search(r"\|team2=\{\{#invoke:flag\|fb\|(\w+)\}\}", b)
-        num = int(re.search(r"\|Match (\d+)", b).group(1))
+        num = match_num(b)
+        if num is None:
+            continue
         stadium, city = clean_stadium(re.search(r"\|stadium=(.*)", b).group(1))
         matches.append({
             "n": num, "stage": "group", "group": g, "date": date, "time": time,
@@ -113,7 +127,9 @@ def parse_knockout(txt, matches):
         y, mo, d = map(int, dm.groups())
         hh, mm, oh, om = parse_time(re.search(r"\|time=(.*)", b).group(1))
         date, time = to_ro(y, mo, d, hh, mm, oh, om)
-        num = int(re.search(r"\|Match (\d+)", b).group(1))
+        num = match_num(b)
+        if num is None:
+            continue
 
         def side(s):
             m = re.search(r"\|team" + s + r"=(?:<!--.*?-->)?\s*([^\n|]*)", b)
