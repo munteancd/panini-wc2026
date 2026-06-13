@@ -97,7 +97,7 @@ def match_num(b):
     return None
 
 
-def parse_group(txt, g, matches):
+def parse_group(txt, g, matches, num_lookup):
     for b in re.findall(r"football box\|main(.*?)\n}}", txt, re.S):
         dm = re.search(r"\|date=\{\{Start date\|(\d+)\|(\d+)\|(\d+)\}\}", b)
         if not dm:
@@ -107,14 +107,21 @@ def parse_group(txt, g, matches):
         date, time = to_ro(y, mo, d, hh, mm, oh, om)
         t1 = re.search(r"\|team1=\{\{#invoke:flag\|fb-rt\|(\w+)\}\}", b)
         t2 = re.search(r"\|team2=\{\{#invoke:flag\|fb\|(\w+)\}\}", b)
+        c1 = t1.group(1) if t1 else None
+        c2 = t2.group(1) if t2 else None
         num = match_num(b)
+        if num is None:
+            # Wikipedia strips |Match N once a match is played, and the FIFA
+            # report URL no longer carries the PMSR-Mxx number either. Recover
+            # it from the previously committed schedule by team pair (group
+            # fixtures and their numbers are fixed since the December draw).
+            num = num_lookup.get((g, frozenset((c1, c2))))
         if num is None:
             continue
         stadium, city = clean_stadium(re.search(r"\|stadium=(.*)", b).group(1))
         matches.append({
             "n": num, "stage": "group", "group": g, "date": date, "time": time,
-            "team1": t1.group(1) if t1 else None,
-            "team2": t2.group(1) if t2 else None,
+            "team1": c1, "team2": c2,
             "label1": None, "label2": None, "stadium": stadium, "city": city,
         })
 
@@ -153,10 +160,27 @@ def parse_knockout(txt, matches):
         })
 
 
+def load_group_numbers():
+    """Map (group, frozenset of team codes) -> match number from the existing
+    matches.json, so played group matches keep their number after Wikipedia
+    drops |Match N. Empty if the file does not exist yet."""
+    lookup = {}
+    try:
+        with open(OUT, encoding="utf-8") as f:
+            existing = json.load(f)
+    except (FileNotFoundError, ValueError):
+        return lookup
+    for m in existing.get("matches", []):
+        if m.get("stage") == "group" and m.get("team1") and m.get("team2"):
+            lookup[(m["group"], frozenset((m["team1"], m["team2"])))] = m["n"]
+    return lookup
+
+
 def main():
+    num_lookup = load_group_numbers()
     matches = []
     for g in "ABCDEFGHIJKL":
-        parse_group(fetch(f"2026_FIFA_World_Cup_Group_{g}"), g, matches)
+        parse_group(fetch(f"2026_FIFA_World_Cup_Group_{g}"), g, matches, num_lookup)
     ko = fetch("2026_FIFA_World_Cup_knockout_stage") + "\n" + fetch("2026_FIFA_World_Cup_final")
     parse_knockout(ko, matches)
 
