@@ -958,7 +958,7 @@
       "time": "23:30",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. · Gr. E",
+      "label1": "{{#invoke:flag",
       "label2": "Locul 3 · Gr. A/B/C/D/F",
       "stadium": "Gillette Stadium",
       "city": "Foxborough"
