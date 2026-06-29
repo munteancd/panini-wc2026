@@ -958,7 +958,7 @@
       "time": "20:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M73",
+      "label1": "{{#invoke:flag",
       "label2": "Câștig. M75",
       "stadium": "NRG Stadium",
       "city": "Houston"
