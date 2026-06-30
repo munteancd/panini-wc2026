@@ -945,7 +945,7 @@
       "time": "00:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M74",
+      "label1": "{{#invoke:flag",
       "label2": "Câștig. M77",
       "stadium": "Lincoln Financial Field",
       "city": "Philadelphia"
