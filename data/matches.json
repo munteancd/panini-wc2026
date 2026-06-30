@@ -972,7 +972,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Câștig. M78",
+      "label2": "{{#invoke:flag",
       "stadium": "MetLife Stadium",
       "city": "East Rutherford"
     },
