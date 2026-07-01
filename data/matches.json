@@ -946,7 +946,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Câștig. M77",
+      "label2": "{{#invoke:flag",
       "stadium": "Lincoln Financial Field",
       "city": "Philadelphia"
     },
