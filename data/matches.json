@@ -1010,8 +1010,8 @@
       "time": "03:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M81",
-      "label2": "Câștig. M82",
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
       "stadium": "Lumen Field",
       "city": "Seattle"
     },
