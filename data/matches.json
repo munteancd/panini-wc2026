@@ -1036,7 +1036,7 @@
       "time": "23:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M85",
+      "label1": "{{#invoke:flag",
       "label2": "Câștig. M87",
       "stadium": "BC Place",
       "city": "Vancouver"
