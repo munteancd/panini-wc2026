@@ -997,8 +997,8 @@
       "time": "22:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M83",
-      "label2": "Câștig. M84",
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
       "stadium": "AT&T Stadium",
       "city": "Arlington"
     },
