@@ -1023,8 +1023,8 @@
       "time": "19:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M86",
-      "label2": "Câștig. M88",
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
       "stadium": "Mercedes-Benz Stadium",
       "city": "Atlanta"
     },
