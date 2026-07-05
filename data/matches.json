@@ -938,6 +938,19 @@
       "city": "Atlanta"
     },
     {
+      "n": 89,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-05",
+      "time": "00:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "Lincoln Financial Field",
+      "city": "Philadelphia"
+    },
+    {
       "n": 91,
       "stage": "R16",
       "group": null,
