@@ -951,24 +951,11 @@
       "city": "Philadelphia"
     },
     {
-      "n": 91,
-      "stage": "R16",
-      "group": null,
-      "date": "2026-07-05",
-      "time": "23:00",
-      "team1": null,
-      "team2": null,
-      "label1": "{{#invoke:flag",
-      "label2": "{{#invoke:flag",
-      "stadium": "MetLife Stadium",
-      "city": "East Rutherford"
-    },
-    {
       "n": 92,
       "stage": "R16",
       "group": null,
       "date": "2026-07-06",
-      "time": "03:00",
+      "time": "04:00",
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
@@ -1062,7 +1049,7 @@
       "time": "00:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M91",
+      "label1": "{{#invoke:flag",
       "label2": "Câștig. M92",
       "stadium": "Hard Rock Stadium",
       "city": "Miami Gardens"
