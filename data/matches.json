@@ -951,6 +951,45 @@
       "city": "Philadelphia"
     },
     {
+      "n": 90,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-04",
+      "time": "20:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "NRG Stadium",
+      "city": "Houston"
+    },
+    {
+      "n": 91,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-05",
+      "time": "23:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "MetLife Stadium",
+      "city": "East Rutherford"
+    },
+    {
+      "n": 92,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-06",
+      "time": "04:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "Estadio Azteca",
+      "city": "Mexico City"
+    },
+    {
       "n": 93,
       "stage": "R16",
       "group": null,
