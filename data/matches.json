@@ -990,6 +990,19 @@
       "city": "Mexico City"
     },
     {
+      "n": 93,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-06",
+      "time": "22:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "AT&T Stadium",
+      "city": "Arlington"
+    },
+    {
       "n": 94,
       "stage": "R16",
       "group": null,
