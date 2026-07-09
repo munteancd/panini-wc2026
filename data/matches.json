@@ -1016,6 +1016,32 @@
       "city": "Seattle"
     },
     {
+      "n": 95,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-07",
+      "time": "19:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "Mercedes-Benz Stadium",
+      "city": "Atlanta"
+    },
+    {
+      "n": 96,
+      "stage": "R16",
+      "group": null,
+      "date": "2026-07-07",
+      "time": "23:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "BC Place",
+      "city": "Vancouver"
+    },
+    {
       "n": 97,
       "stage": "QF",
       "group": null,
