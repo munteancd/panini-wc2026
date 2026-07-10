@@ -1042,6 +1042,19 @@
       "city": "Vancouver"
     },
     {
+      "n": 97,
+      "stage": "QF",
+      "group": null,
+      "date": "2026-07-09",
+      "time": "23:00",
+      "team1": null,
+      "team2": null,
+      "label1": "{{#invoke:flag",
+      "label2": "{{#invoke:flag",
+      "stadium": "Gillette Stadium",
+      "city": "Foxborough"
+    },
+    {
       "n": 98,
       "stage": "QF",
       "group": null,
