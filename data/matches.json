@@ -1055,19 +1055,6 @@
       "city": "Foxborough"
     },
     {
-      "n": 98,
-      "stage": "QF",
-      "group": null,
-      "date": "2026-07-10",
-      "time": "22:00",
-      "team1": null,
-      "team2": null,
-      "label1": "{{#invoke:flag",
-      "label2": "{{#invoke:flag",
-      "stadium": "SoFi Stadium",
-      "city": "Inglewood"
-    },
-    {
       "n": 99,
       "stage": "QF",
       "group": null,
@@ -1102,7 +1089,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Câștig. M98",
+      "label2": "{{#invoke:flag",
       "stadium": "AT&T Stadium",
       "city": "Arlington"
     },
