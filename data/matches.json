@@ -1068,19 +1068,6 @@
       "city": "Inglewood"
     },
     {
-      "n": 99,
-      "stage": "QF",
-      "group": null,
-      "date": "2026-07-12",
-      "time": "00:00",
-      "team1": null,
-      "team2": null,
-      "label1": "{{#invoke:flag",
-      "label2": "{{#invoke:flag",
-      "stadium": "Hard Rock Stadium",
-      "city": "Miami Gardens"
-    },
-    {
       "n": 100,
       "stage": "QF",
       "group": null,
@@ -1114,7 +1101,7 @@
       "time": "22:00",
       "team1": null,
       "team2": null,
-      "label1": "Câștig. M99",
+      "label1": "{{#invoke:flag",
       "label2": "Câștig. M100",
       "stadium": "Mercedes-Benz Stadium",
       "city": "Atlanta"
