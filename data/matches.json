@@ -1068,19 +1068,6 @@
       "city": "Inglewood"
     },
     {
-      "n": 100,
-      "stage": "QF",
-      "group": null,
-      "date": "2026-07-12",
-      "time": "04:00",
-      "team1": null,
-      "team2": null,
-      "label1": "{{#invoke:flag",
-      "label2": "{{#invoke:flag",
-      "stadium": "Arrowhead Stadium",
-      "city": "Kansas City"
-    },
-    {
       "n": 101,
       "stage": "SF",
       "group": null,
@@ -1102,7 +1089,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Câștig. M100",
+      "label2": "{{#invoke:flag",
       "stadium": "Mercedes-Benz Stadium",
       "city": "Atlanta"
     },
