@@ -1107,19 +1107,6 @@
       "city": "Arlington"
     },
     {
-      "n": 102,
-      "stage": "SF",
-      "group": null,
-      "date": "2026-07-15",
-      "time": "22:00",
-      "team1": null,
-      "team2": null,
-      "label1": "{{#invoke:flag",
-      "label2": "{{#invoke:flag",
-      "stadium": "Mercedes-Benz Stadium",
-      "city": "Atlanta"
-    },
-    {
       "n": 103,
       "stage": "3rd",
       "group": null,
@@ -1128,7 +1115,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Învinsă M102",
+      "label2": "{{#invoke:flag",
       "stadium": "Hard Rock Stadium",
       "city": "Miami Gardens"
     },
@@ -1141,7 +1128,7 @@
       "team1": null,
       "team2": null,
       "label1": "{{#invoke:flag",
-      "label2": "Câștig. M102",
+      "label2": "{{#invoke:flag",
       "stadium": "MetLife Stadium",
       "city": "East Rutherford"
     }
